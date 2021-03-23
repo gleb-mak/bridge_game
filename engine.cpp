@@ -1,0 +1,36 @@
+#include "engine.h"
+
+
+Engine::Engine()
+{
+	window.create(sf::VideoMode(1000, 800), "Game");
+//	balks.push_back(Balk({100, 600}, 100, 20, "stick.png"));
+//	Balk balk_({100, 100}, 100, 20, "stick.png");
+//	balk = balk_;
+//	balk = Balk();
+//	balk = create_balk();
+}
+
+void Engine::start()
+{
+	sf::Clock clock;
+	sf::Time dt;
+	float dt_seconds = dt.asSeconds(); 
+	while(window.isOpen())
+	{
+		dt = clock.restart();
+		sf::Event event;
+		while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            window.close();
+        }
+		input();
+		update(dt_seconds);
+	    window.clear(sf::Color(255, 255, 255));
+//		window.draw(balks.back().get_sprite());
+		window.draw(balk.get_sprite());
+		window.display();
+		//draw();
+	}
+}
