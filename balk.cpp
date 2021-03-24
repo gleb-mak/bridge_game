@@ -2,34 +2,50 @@
 
 Balk::Balk()
 {
-	begin = {100, 100};
+	position = {100, 100};
     len = 100;
     angle = 20;
 	mass = 1;
+	is_move = false;
+	is_rotate = false;
     texture.loadFromFile("./images/stick.png");
-//  texture.loadFromImage(image);
-    sprite.setTexture(texture);
+	sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, 100));
 	sprite.setRotation(angle);
-    sprite.setPosition(100, 100);
+	sprite.setOrigin(sf::Vector2f(5, 50));
+    sprite.setPosition(position);
 }
 
-Balk::Balk(sf::Vector2f begin_, int len_, double angle_, double mass_, string file)
+void Balk::initialize(float position_x, float position_y, int len_, double angle_, double mass_, string file)
 {
-	begin = {100, 100};
-	len = 100;
-	angle = 20;
-	mass = mass_;
-	texture.loadFromFile("./images/stick.png");
-//	texture.loadFromImage(image);
-	sprite.setTexture(texture);
-	sprite.setTextureRect(sf::IntRect(0, 0, 10, 100));
-	sprite.setPosition(100, 100);
+    position.x = position_x;
+	position.y = position_y;
+    len = len_;
+    angle = angle_;
+    mass = mass_;
+    texture.loadFromFile("./images/" + file);
+    sprite.setTexture(texture);
+    sprite.setTextureRect(sf::IntRect(0, 0, 10, len));
+	sprite.setOrigin(sf::Vector2f(5, len / 2));
+    sprite.setPosition(position);
 }
 
-void Balk::update(float sec)
+void Balk::update(float x, float y)
 {
-	sprite.setPosition(100, 200);
+	if (is_move)
+	{
+		position.x = x;
+		position.y = y;
+		sprite.setPosition(position);
+	}
+}
+
+void Balk::update(double angle_)
+{
+	if (is_rotate)
+	{
+		sprite.rotate(angle_);
+	}
 }
 
 sf::Sprite Balk::get_sprite()

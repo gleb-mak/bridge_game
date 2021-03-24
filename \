@@ -1,17 +1,15 @@
 #include "engine.h"
 
+
 Engine::Engine()
 {
 	window.create(sf::VideoMode(1000, 800), "Game");
-	balks.resize(3);
-	int i = 1;
-	for (auto& balk : balks)
-	{
-		balk.initialize((float)100 * i, (float)100, 100, 100, 1, "stick.png");
-		i++;
-	}
-	is_left_pressed = false;
-	is_right_pressed = false;
+	balk.initialize((float)100, (float)100, 100, 20, "stick.png");
+//	balks.push_back(Balk({100, 600}, 100, 20, "stick.png"));
+//	Balk balk_({100, 100}, 100, 20, "stick.png");
+//	balk = balk_;
+//	balk = Balk();
+//	balk = create_balk();
 }
 
 void Engine::start()
@@ -30,11 +28,10 @@ void Engine::start()
         }
 		input();
 		update(dt_seconds);
-		draw();
+	    window.clear(sf::Color(255, 255, 255));
+//		window.draw(balks.back().get_sprite());
+		window.draw(balk.get_sprite());
+		window.display();
+		//draw();
 	}
-}
-
-void Engine::add_balk()
-{
-	balks.resize(balks.size() + 1);
 }

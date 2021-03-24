@@ -8,14 +8,17 @@ class Balk
 {
 public:
 	Balk();
-    Balk(sf::Vector2f begin_, int len, double angle_, double mass_, string file);
-	void update(float sec);
+	void initialize(float position_x, float position_y, int len, double angle_, double mass_, string file);
+	void update(float x, float y);
+	void update(double angle_);
 	sf::Sprite get_sprite();
+	bool is_move;
+	bool is_rotate;
 private:
-	sf::Vector2f begin;
     int len;
     double angle;
 	double mass;
+	sf::Vector2f position;
 	sf::Image image;
 	sf::Texture texture;
 	sf::Sprite sprite;
