@@ -3,6 +3,7 @@
 Engine::Engine()
 {
 	window.create(sf::VideoMode(1000, 800), "Game");
+	window.setKeyRepeatEnabled(false);
 	balks.resize(3);
 	int i = 1;
 	for (auto& balk : balks)
@@ -12,13 +13,14 @@ Engine::Engine()
 	}
 	is_left_pressed = false;
 	is_right_pressed = false;
+	is_R_pressed = false;
 }
 
 void Engine::start()
 {
 	sf::Clock clock;
 	sf::Time dt;
-	float dt_seconds = dt.asSeconds(); 
+	int dt_seconds = dt.asMilliseconds(); 
 	while(window.isOpen())
 	{
 		dt = clock.restart();

@@ -1,4 +1,5 @@
 #include "balk.h"
+#include <cmath>
 
 Balk::Balk()
 {
@@ -8,6 +9,8 @@ Balk::Balk()
 	mass = 1;
 	is_move = false;
 	is_rotate = false;
+	is_fixed = false;
+	is_select = false;
     texture.loadFromFile("./images/stick.png");
 	sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, 100));
@@ -26,13 +29,13 @@ void Balk::initialize(float position_x, float position_y, int len_, double angle
     texture.loadFromFile("./images/" + file);
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, len));
-	sprite.setOrigin(sf::Vector2f(5, len / 2));
+//	sprite.setOrigin(sf::Vector2f(5, len / 2));
     sprite.setPosition(position);
 }
 
 void Balk::update(float x, float y)
 {
-	if (is_move)
+	if (is_move && !is_fixed)
 	{
 		position.x = x;
 		position.y = y;
@@ -40,11 +43,26 @@ void Balk::update(float x, float y)
 	}
 }
 
-void Balk::update(double angle_)
+void Balk::update(int dt)
 {
 	if (is_rotate)
 	{
-		sprite.rotate(angle_);
+		sprite.rotate(dt * 0.1);
+	}
+}
+
+void Balk::update(sf::Vector2f dist)
+{
+	if (is_fixed)
+	{
+//		position += sprite.getPosition();
+//		sprite.setOrigin(0, 0);
+		sf::Vector2f guide = dist / hypot(dist.x, dist.y);
+		guide = guide * 50.f;
+		sprite.setOrigin(0, 0);
+		//sprite.setOrigin(sprite.getOrigin() + dist);
+		position += guide;
+		sprite.setPosition(position);
 	}
 }
 

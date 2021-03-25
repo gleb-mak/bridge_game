@@ -8,5 +8,6 @@ void Engine::draw()
 	{
 		window.draw(balk.get_sprite());
 	}
+	window.draw(fastener.get_sprite());
 	window.display();
 }

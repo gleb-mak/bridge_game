@@ -15,7 +15,12 @@ void Engine::input()
 		is_left_pressed = true;
 	}
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+	//if (sf::Keyboard::isKeyPrssed(sf::Keyboard::R))
 	{
 		is_right_pressed = true;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		is_R_pressed = true;
 	}
 }	
