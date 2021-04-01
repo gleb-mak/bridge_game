@@ -13,17 +13,19 @@ public:
 	Engine();
 	void start();
 private:
-	void update(int miliseconds);
+	void update(float time);
 	void input();
 	void draw();
 	void add_balk();
 	bool is_left_pressed;
 	bool is_right_pressed;
 	bool is_R_pressed;
+	bool is_gravity;
 	sf::RenderWindow window;
 	sf::Texture background_texture;
 	sf::Sprite background_sprite;
 	list<Balk> balks;
 	Fastener fastener;
+	void draw_balk(Balk& balk);
 //	Balk balk;
 };

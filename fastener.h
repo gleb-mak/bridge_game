@@ -8,8 +8,9 @@ class Fastener
 {
 public:
 	Fastener();
-	void initialize(float x, float y, string file);
+	void initialize(sf::Vector2f pos, string file);
 	sf::Sprite get_sprite();
+	void setPosition_(sf::Vector2f pos);
 private:
 	sf::Vector2f position;
 	sf::Image image;

@@ -1,6 +1,6 @@
 #include "engine.h"
 
-void Engine::update(int sec)
+void Engine::update(float dt)
 {
 //	if (sf::Keyboard::)
 	for (auto& balk : balks)
@@ -26,14 +26,18 @@ void Engine::update(int sec)
 		if (is_R_pressed && balk.is_select)
 		{
 			balk.is_rotate = true;
-			balk.update(sec);
+			balk.update(dt);
 			break;
 		}
         if (balk.get_sprite().getGlobalBounds().contains(fastener.get_sprite().getPosition()))
 		{
 			balk.is_fixed = true;
 			sf::Vector2f dist = fastener.get_sprite().getPosition() - balk.get_sprite().getPosition();
-			balk.update(dist);
+			balk.update(fastener.get_sprite().getPosition());
+		}
+		if (is_gravity)
+		{
+			balk.update_gravity(dt);
 		}
 	}
 	is_left_pressed = false;

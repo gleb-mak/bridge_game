@@ -1,13 +1,20 @@
 #include "engine.h"
 
+void Engine::draw_balk(Balk& balk)
+{
+	window.draw(balk.get_sprite());
+	window.draw(balk.fasteners[0].get_sprite());
+	window.draw(balk.fasteners[1].get_sprite());
+}
+
 void Engine::draw()
 {
 	window.clear(sf::Color(255, 255, 255));
-//  window.draw(balks.back().get_sprite());
 	for (auto& balk : balks)
 	{
-		window.draw(balk.get_sprite());
+		draw_balk(balk);
 	}
 	window.draw(fastener.get_sprite());
 	window.display();
 }
+

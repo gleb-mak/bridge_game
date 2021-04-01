@@ -3,7 +3,7 @@
 Engine::Engine()
 {
 	window.create(sf::VideoMode(1000, 800), "Game");
-	window.setKeyRepeatEnabled(false);
+//	window.setKeyRepeatEnabled(false);
 	balks.resize(3);
 	int i = 1;
 	for (auto& balk : balks)
@@ -14,16 +14,17 @@ Engine::Engine()
 	is_left_pressed = false;
 	is_right_pressed = false;
 	is_R_pressed = false;
+	is_gravity = false;
 }
 
 void Engine::start()
 {
 	sf::Clock clock;
-	sf::Time dt;
-	int dt_seconds = dt.asMilliseconds(); 
 	while(window.isOpen())
 	{
-		dt = clock.restart();
+		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
+		clock.restart(); //перезагружает время
+		time = time/800;
 		sf::Event event;
 		while (window.pollEvent(event))
         {
@@ -31,7 +32,7 @@ void Engine::start()
             window.close();
         }
 		input();
-		update(dt_seconds);
+		update(time);
 		draw();
 	}
 }
