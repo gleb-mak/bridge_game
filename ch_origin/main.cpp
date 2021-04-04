@@ -49,8 +49,8 @@ int main()
         }
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
 		{
-			ch_origin(sf::Vector2f(5, 50), sprite);
-//			sprite.rotate(10);
+			ch_origin(sf::Vector2f(50, 50), sprite);
+			sprite.rotate(10);
 			cout << sprite.getOrigin().x << " " << sprite.getOrigin().y;
 		}
 		window.draw(sprite);

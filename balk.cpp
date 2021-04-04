@@ -5,8 +5,9 @@
 
 Balk::Balk()
 {
+	fasteners.resize(2);
     len = 100;
-    angle = 20;
+    angle = 0;
 	mass = 1;
 	speed = 0;
 	omega = 0;
@@ -18,11 +19,16 @@ Balk::Balk()
     texture.loadFromFile("./images/stick.png");
 	sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, 100));
-	sprite.setRotation(angle);
-	sprite.setOrigin(sf::Vector2f(5, 50));
+//	rotate_(angle);
 	position = {100, 100};
     sprite.setPosition(position);
-	fasteners.resize(2);
+	fasteners[0].setPosition_(get_begin());
+	fasteners[1].setPosition_(get_end());
+	sf::Vector2f f = fasteners[0].get_sprite().getOrigin();
+	ch_origin(sf::Vector2f(5, 50));
+	f = fasteners[0].get_sprite().getOrigin();
+	fasteners[0].setPosition_(position);
+    fasteners[1].setPosition_(position);
 }
 
 void Balk::initialize(float position_x, float position_y, int len_, double angle_, double mass_, string file)
@@ -35,22 +41,43 @@ void Balk::initialize(float position_x, float position_y, int len_, double angle
     texture.loadFromFile("./images/" + file);
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, len));
-    sprite.setPosition(position);
-    fasteners[0].initialize(get_begin(), "fastener.png");
-    fasteners[1].initialize(get_end(), "fastener.png");
+	sf::Vector2f f = fasteners[0].get_sprite().getOrigin();
+    setPosition_(position);
+    // fasteners[0].initialize(get_begin(), "fastener.png");
+    // fasteners[1].initialize(get_end(), "fastener.png");
+	rotate_(angle);
 }
 
 void Balk::setPosition_(sf::Vector2f new_pos)
 {
 	position = new_pos;
 	sprite.setPosition(new_pos);
-    fasteners[0].setPosition_(get_begin());
-    fasteners[1].setPosition_(get_end());
+	//fasteners[0].ch_origin(sf::Vector2f(5, 5));
+	//fasteners[1].ch_origin(sf::Vector2f(5, 5));
+    //fasteners[0].setPosition_(get_begin());
+    //fasteners[1].setPosition_(get_end());
+	fasteners[0].setPosition_(new_pos);
+	fasteners[1].setPosition_(new_pos);
+	//ch_origin(sprite.getOrigin());
+}
+
+sf::Vector2f global_to_local(sf::Vector2f v_global, float alpha)
+{
+	alpha = alpha * M_PI / 180;
+	sf::Vector2f i_1;
+	sf::Vector2f i_2;
+	i_1.x = cos(alpha);
+	i_1.y = - sin(alpha);
+	i_2.x = sin(alpha);
+	i_2.y = cos(alpha);
+	return v_global.x * i_1 + v_global.y * i_2;
 }
 
 void Balk::rotate_(float angle)
 {
 	sprite.rotate(angle);
+	fasteners[1].get_sprite().rotate(angle);
+	fasteners[0].get_sprite().rotate(angle);
 }
 
 sf::Vector2f Balk::get_begin()
@@ -82,7 +109,7 @@ void Balk::update_rotate(float dt)
 {
 	if (is_rotate)
 	{
-		sprite.rotate(dt * 0.1);
+		rotate_(dt * 0.1);
 	}
 }
 
@@ -106,6 +133,12 @@ void Balk::ch_origin(sf::Vector2f new_origin)
     sprite.setPosition(sprite.getPosition() - delta);
 	position = sprite.getPosition();
     sprite.setOrigin(new_origin);
+    sf::Vector2f origin_global_1 = sprite.getPosition() - fasteners[1].get_sprite().getPosition() + get_global_origin(fasteners[1].get_sprite().getOrigin());
+    sf::Vector2f origin_global_0 = sprite.getPosition() - fasteners[0].get_sprite().getPosition() + get_global_origin(fasteners[0].get_sprite().getOrigin());
+    sf::Vector2f origin_local_1 = global_to_local(origin_global_1, fasteners[1].get_sprite().getRotation());
+    sf::Vector2f origin_local_0 = global_to_local(origin_global_0, fasteners[0].get_sprite().getRotation());
+    fasteners[1].ch_origin(origin_local_1);
+    fasteners[0].ch_origin(origin_local_0);
 }
 
 void Balk::update_fix(sf::Vector2f fix_pos)
@@ -143,7 +176,7 @@ void Balk::update_gravity(float dt)
 			angle =- 1.5 * M_PI;
 		}
 		omega += sign * 1.5 * G * cos(angle) * dt;
-		sprite.rotate(omega * dt);
+		rotate_(omega * dt);
 	}
 	else
 	{
@@ -153,7 +186,7 @@ void Balk::update_gravity(float dt)
 	}
 }
 
-sf::Sprite Balk::get_sprite()
+sf::Sprite& Balk::get_sprite()
 {
 	return sprite;
 }

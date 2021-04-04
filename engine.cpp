@@ -8,7 +8,7 @@ Engine::Engine()
 	int i = 1;
 	for (auto& balk : balks)
 	{
-		balk.initialize((float)100 * i, (float)100, 100, 100, 1, "stick.png");
+		balk.initialize(100.f * i, 100.f, 100, 0, 1, "stick.png");
 		i++;
 	}
 	is_left_pressed = false;

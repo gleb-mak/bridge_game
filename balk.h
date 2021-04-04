@@ -15,7 +15,7 @@ public:
 	void update_rotate(float dt);
 	void update_fix(sf::Vector2f fix_pos);
 	void update_gravity(float time);
-	sf::Sprite get_sprite();
+	sf::Sprite& get_sprite();
 	bool is_move;
 	bool is_rotate;
 	bool is_fixed;
