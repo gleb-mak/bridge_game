@@ -14,6 +14,7 @@ Balk::Balk()
 	is_rotate = false;
 	is_fixed = false;
 	is_select = false;
+	parent = NULL;
     texture.loadFromFile("./images/stick.png");
 	sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, 100));
@@ -22,12 +23,6 @@ Balk::Balk()
 	position = {100, 100};
     sprite.setPosition(position);
 	fasteners.resize(2);
-	// fasteners[0].initialize(get_begin(), "fastener.png");
-	// fasteners[1].initialize(get_end(), "fastener.png");
-	// fasteners[0].get_sprite().setPosition(sf::Vector2f(10, 10));
-	// fasteners[1].get_sprite().setPosition(sf::Vector2f(110, 110));
-//	fasteners[0].get_sprite().setPosition(get_begin());
-//	fasteners[1].get_sprite().setPosition(get_end());
 }
 
 void Balk::initialize(float position_x, float position_y, int len_, double angle_, double mass_, string file)
@@ -40,12 +35,9 @@ void Balk::initialize(float position_x, float position_y, int len_, double angle
     texture.loadFromFile("./images/" + file);
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, len));
-//	sprite.setOrigin(sf::Vector2f(5, len / 2));
     sprite.setPosition(position);
     fasteners[0].initialize(get_begin(), "fastener.png");
     fasteners[1].initialize(get_end(), "fastener.png");
-    //fasteners[0].get_sprite().setPosition(sf::Vector2f(300, 300));
-    // fasteners[1].get_sprite().setPosition(get_end());
 }
 
 void Balk::setPosition_(sf::Vector2f new_pos)
@@ -54,6 +46,11 @@ void Balk::setPosition_(sf::Vector2f new_pos)
 	sprite.setPosition(new_pos);
     fasteners[0].setPosition_(get_begin());
     fasteners[1].setPosition_(get_end());
+}
+
+void Balk::rotate_(float angle)
+{
+	sprite.rotate(angle);
 }
 
 sf::Vector2f Balk::get_begin()
@@ -72,18 +69,16 @@ sf::Vector2f Balk::get_end()
     return ans;
 }
 
-void Balk::update(float x, float y)
+void Balk::update_move(sf::Vector2f pos)
 {
 	if (is_move && !is_fixed)
 	{
-		position.x = x;
-		position.y = y;
+		position = pos;
 		setPosition_(position);
-		//sprite.setPosition_(position);
 	}
 }
 
-void Balk::update(float dt)
+void Balk::update_rotate(float dt)
 {
 	if (is_rotate)
 	{
@@ -113,7 +108,7 @@ void Balk::ch_origin(sf::Vector2f new_origin)
     sprite.setOrigin(new_origin);
 }
 
-void Balk::update(sf::Vector2f fix_pos)
+void Balk::update_fix(sf::Vector2f fix_pos)
 {
 	if (is_fixed)
 	{

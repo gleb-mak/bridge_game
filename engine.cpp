@@ -25,12 +25,12 @@ void Engine::start()
 		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
 		clock.restart(); //перезагружает время
 		time = time/800;
-		sf::Event event;
-		while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            window.close();
-        }
+		// sf::Event event;
+		// while (window.pollEvent(event))
+        // {
+        //     if (event.type == sf::Event::Closed)
+        //     window.close();
+        // }
 		input();
 		update(time);
 		draw();

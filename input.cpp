@@ -2,28 +2,46 @@
 
 void Engine::input()
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+	sf::Event event;
+    while (window.pollEvent(event))
 	{
-		window.close();
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
-	{
-		add_balk();		
+		switch (event.type)
+		{
+        case sf::Event::Closed:
+			window.close();
+            break;
+        case sf::Event::KeyPressed:
+			switch (event.key.code)
+			{
+				case sf::Keyboard::Q:
+					window.close();
+					break;
+				case sf::Keyboard::N:
+					add_balk();
+					break;
+				case sf::Keyboard::G:
+					is_gravity = !is_gravity;
+					break;
+				default:
+					break;
+			}
+            break;
+		case sf::Event::MouseButtonPressed:
+			if (event.mouseButton.button == sf::Mouse::Right)
+			{
+				is_right_pressed = true;
+			}
+			break;
+		default:
+            break;
+		}
 	}
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		is_left_pressed = true;
 	}
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-	{
-		is_right_pressed = true;
-	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
 		is_R_pressed = true;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
-	{
-		is_gravity = true;
 	}
 }	
