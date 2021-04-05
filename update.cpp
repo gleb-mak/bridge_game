@@ -47,7 +47,7 @@ void Engine::update(float dt)
 		{
 			for (auto& it : balks)
 			{
-				if (it.is_fixed && &it != &balk && balk.get_sprite().getGlobalBounds().intersects(it.fasteners[1].get_sprite().getGlobalBounds()))
+				if ((it.is_fixed || it.is_child) && &it != &balk && balk.get_sprite().getGlobalBounds().intersects(it.fasteners[1].get_sprite().getGlobalBounds()))
 				{
 					balk.is_child = true;
 					balk.update_become_child(&it);
