@@ -37,21 +37,27 @@ void Engine::update(float dt)
 			balk.update_rotate(dt);
 			break;
 		}
-        if (!balk.is_fixed && balk.get_sprite().getGlobalBounds().contains(fastener.get_sprite().getPosition()))
+        if (!balk.is_fixed && !balk.is_child && balk.get_sprite().getGlobalBounds().contains(fastener.get_sprite().getPosition()))
 		{
 			balk.is_fixed = true;
 			sf::Vector2f dist = fastener.get_sprite().getPosition() - balk.get_sprite().getPosition();
 			balk.update_fix(fastener.get_sprite().getPosition());
 		}
-		if (balk.is_fixed)
+		if (!balk.is_child && !balk.is_fixed)
 		{
 			for (auto& it : balks)
 			{
-				if (&it != &balk && balk.get_sprite().getGlobalBounds().contains(it.fasteners[0].get_sprite().getPosition()))
+				if (it.is_fixed && &it != &balk && balk.get_sprite().getGlobalBounds().intersects(it.fasteners[1].get_sprite().getGlobalBounds()))
 				{
-					
+					balk.is_child = true;
+					balk.update_become_child(&it);
+					break;
 				}
 			}
+		}
+		else
+		{
+			balk.update_child();			
 		}
 		if (is_gravity)
 		{

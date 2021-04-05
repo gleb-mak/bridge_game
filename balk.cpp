@@ -15,6 +15,7 @@ Balk::Balk()
 	is_rotate = false;
 	is_fixed = false;
 	is_select = false;
+	is_child = false;
 	parent = NULL;
     texture.loadFromFile("./images/stick.png");
 	sprite.setTexture(texture);
@@ -24,11 +25,9 @@ Balk::Balk()
     sprite.setPosition(position);
 	fasteners[0].setPosition_(get_begin());
 	fasteners[1].setPosition_(get_end());
-	sf::Vector2f f = fasteners[0].get_sprite().getOrigin();
 	ch_origin(sf::Vector2f(5, 50));
-	f = fasteners[0].get_sprite().getOrigin();
 	fasteners[0].setPosition_(position);
-    fasteners[1].setPosition_(position);
+	fasteners[1].setPosition_(position);
 }
 
 void Balk::initialize(float position_x, float position_y, int len_, double angle_, double mass_, string file)
@@ -41,7 +40,6 @@ void Balk::initialize(float position_x, float position_y, int len_, double angle
     texture.loadFromFile("./images/" + file);
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, len));
-	sf::Vector2f f = fasteners[0].get_sprite().getOrigin();
     setPosition_(position);
     // fasteners[0].initialize(get_begin(), "fastener.png");
     // fasteners[1].initialize(get_end(), "fastener.png");
@@ -98,7 +96,7 @@ sf::Vector2f Balk::get_end()
 
 void Balk::update_move(sf::Vector2f pos)
 {
-	if (is_move && !is_fixed)
+	if (is_move && !is_fixed && !is_child)
 	{
 		position = pos;
 		setPosition_(position);
@@ -178,7 +176,7 @@ void Balk::update_gravity(float dt)
 		omega += sign * 1.5 * G * cos(angle) * dt;
 		rotate_(omega * dt);
 	}
-	else
+	else if (!is_child)
 	{
 		speed += dt * G;
 		position.y += dt * speed;
@@ -186,7 +184,30 @@ void Balk::update_gravity(float dt)
 	}
 }
 
+void Balk::update_become_child(Balk* p)
+{
+	if (is_child)
+	{
+		set_parent(p);
+		ch_origin(sf::Vector2f(5, 0));
+		setPosition_(parent->get_end());
+	}
+}
+
+void Balk::update_child()
+{
+	if (is_child)
+	{
+		setPosition_(parent->get_end());
+	}
+}
+
 sf::Sprite& Balk::get_sprite()
 {
 	return sprite;
+}
+
+void Balk::set_parent(Balk* b)
+{
+	parent = b;
 }

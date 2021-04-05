@@ -15,11 +15,16 @@ public:
 	void update_rotate(float dt);
 	void update_fix(sf::Vector2f fix_pos);
 	void update_gravity(float time);
+	void update_become_child(Balk* p);
+	void update_child();
 	sf::Sprite& get_sprite();
+	void set_parent(Balk* b);
+	sf::Vector2f get_end();
 	bool is_move;
 	bool is_rotate;
 	bool is_fixed;
 	bool is_select;
+	bool is_child;
 	vector<Fastener> fasteners; 
 private:
     int len;
@@ -34,7 +39,6 @@ private:
 	void ch_origin(sf::Vector2f new_origin);
 	sf::Vector2f get_global_origin(sf::Vector2f origin);
 	sf::Vector2f get_begin();
-	sf::Vector2f get_end();
 	void setPosition_(sf::Vector2f new_position);
 	void rotate_(float angle);
 };

@@ -4,7 +4,7 @@ Engine::Engine()
 {
 	window.create(sf::VideoMode(1000, 800), "Game");
 //	window.setKeyRepeatEnabled(false);
-	balks.resize(3);
+	balks.resize(2);
 	int i = 1;
 	for (auto& balk : balks)
 	{
