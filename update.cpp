@@ -35,7 +35,10 @@ void Engine::update(float dt)
 		{
 			balk.is_rotate = true;
 			balk.update_rotate(dt);
-			break;
+			if (!balk.is_parent)
+			{
+				break;
+			}
 		}
         if (!balk.is_fixed && !balk.is_child && balk.get_sprite().getGlobalBounds().contains(fastener.get_sprite().getPosition()))
 		{
@@ -55,7 +58,7 @@ void Engine::update(float dt)
 				}
 			}
 		}
-		else
+		if (balk.is_child)
 		{
 			balk.update_child();			
 		}

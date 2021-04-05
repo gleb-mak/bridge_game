@@ -25,6 +25,7 @@ public:
 	bool is_fixed;
 	bool is_select;
 	bool is_child;
+	bool is_parent;
 	vector<Fastener> fasteners; 
 private:
     int len;

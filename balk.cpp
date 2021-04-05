@@ -16,6 +16,7 @@ Balk::Balk()
 	is_fixed = false;
 	is_select = false;
 	is_child = false;
+	is_parent = false;
 	parent = NULL;
     texture.loadFromFile("./images/stick.png");
 	sprite.setTexture(texture);
@@ -210,4 +211,5 @@ sf::Sprite& Balk::get_sprite()
 void Balk::set_parent(Balk* b)
 {
 	parent = b;
+	b->is_parent = true;
 }
