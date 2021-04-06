@@ -20,6 +20,7 @@ private:
 	bool is_left_pressed;
 	bool is_right_pressed;
 	bool is_R_pressed;
+	bool is_L_pressed;
 	bool is_gravity;
 	sf::RenderWindow window;
 	sf::Texture background_texture;

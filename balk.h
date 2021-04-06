@@ -10,13 +10,15 @@ class Balk
 {
 public:
 	Balk();
-	void initialize(float position_x, float position_y, int len, double angle_, double mass_, string file);
+	void initialize(float position_x, float position_y, double len, double angle_, double mass_, string file);
+	static double example(double x);
 	void update_move(sf::Vector2f pos);
 	void update_rotate(float dt);
 	void update_fix(sf::Vector2f fix_pos);
 	void update_gravity(float time);
 	void update_become_child(Balk* p);
 	void update_child();
+	void update_len_inc();
 	sf::Sprite& get_sprite();
 	void set_parent(Balk* b);
 	sf::Vector2f get_end();
@@ -26,9 +28,10 @@ public:
 	bool is_select;
 	bool is_child;
 	bool is_parent;
+	bool is_len_inc;
 	vector<Fastener> fasteners; 
 private:
-    int len;
+    double len;
     double angle;
 	double mass;
 	double omega;

@@ -14,6 +14,7 @@ Engine::Engine()
 	is_left_pressed = false;
 	is_right_pressed = false;
 	is_R_pressed = false;
+	is_L_pressed = false;
 	is_gravity = false;
 }
 

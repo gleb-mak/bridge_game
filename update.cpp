@@ -31,12 +31,21 @@ void Engine::update(float dt)
 				balk.is_select = false;
 			}
 		}
-		if (is_R_pressed && balk.is_select)
+		if (balk.is_select)
 		{
-			balk.is_rotate = true;
-			balk.update_rotate(dt);
-			if (!balk.is_parent)
+			if (is_R_pressed)
 			{
+				balk.is_rotate = true;
+				balk.update_rotate(dt);
+				if (!balk.is_parent)
+				{
+					break;
+				}
+			}
+			if (is_L_pressed && !balk.is_parent)
+			{
+				balk.is_len_inc = true;
+				balk.update_len_inc();
 				break;
 			}
 		}
@@ -70,5 +79,6 @@ void Engine::update(float dt)
     is_left_pressed = false;
     is_right_pressed = false;
     is_R_pressed = false;
+	is_L_pressed = false;
 }
 

@@ -22,6 +22,9 @@ void Engine::input()
 				case sf::Keyboard::G:
 					is_gravity = !is_gravity;
 					break;
+				// case sf::Keyboard::L:
+				// 	is_L_pressed = true;
+				// 	break;
 				default:
 					break;
 			}
@@ -44,4 +47,8 @@ void Engine::input()
 	{
 		is_R_pressed = true;
 	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+    {
+        is_L_pressed = true;
+    }
 }	
