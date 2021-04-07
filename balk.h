@@ -10,6 +10,7 @@ class Balk
 {
 public:
 	Balk();
+	~Balk();
 	void initialize(float position_x, float position_y, double len, double angle_, double mass_, string file);
 	static double example(double x);
 	void update_move(sf::Vector2f pos);
@@ -29,6 +30,7 @@ public:
 	bool is_child;
 	bool is_parent;
 	bool is_len_inc;
+	int child_number;
 	vector<Fastener> fasteners; 
 private:
     double len;

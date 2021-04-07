@@ -22,6 +22,11 @@ void Fastener::initialize(sf::Vector2f pos, string file)
     sprite.setPosition(position);
 }
 
+sf::Texture& Fastener::get_texture()
+{
+	return texture;
+}
+
 void Fastener::setPosition_(sf::Vector2f pos)
 {
 	position = pos;
