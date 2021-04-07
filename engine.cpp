@@ -16,6 +16,7 @@ Engine::Engine()
 	is_R_pressed = false;
 	is_L_pressed = false;
 	is_gravity = false;
+	is_delete = false;
 }
 
 void Engine::start()

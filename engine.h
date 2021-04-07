@@ -22,6 +22,7 @@ private:
 	bool is_R_pressed;
 	bool is_L_pressed;
 	bool is_gravity;
+	bool is_delete;
 	sf::RenderWindow window;
 	sf::Texture background_texture;
 	sf::Sprite background_sprite;

@@ -1,7 +1,7 @@
 #include "balk.h"
 #include <cmath>
 
-#define G 0.001
+#define G 0.1
 
 Balk::Balk()
 {
@@ -11,6 +11,7 @@ Balk::Balk()
 	mass = 1;
 	speed = 0;
 	omega = 0;
+	child_number = 0;
 	is_move = false;
 	is_rotate = false;
 	is_fixed = false;
@@ -22,7 +23,6 @@ Balk::Balk()
     texture.loadFromFile("./images/stick.png");
 	sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, 100));
-//	rotate_(angle);
 	position = {100, 100};
     sprite.setPosition(position);
 	fasteners[0].setPosition_(get_begin());
@@ -30,6 +30,20 @@ Balk::Balk()
 	ch_origin(sf::Vector2f(5, 50));
 	fasteners[0].setPosition_(position);
 	fasteners[1].setPosition_(position);
+}
+
+Balk::~Balk()
+{
+	fasteners.clear();
+	if (is_child)
+	{
+		parent->child_number--;
+		if (parent->child_number == 0)
+		{
+			parent->is_parent = false;
+			parent->fasteners[1].get_texture().loadFromFile("./images/fastener.png");
+		}
+	}
 }
 
 void Balk::initialize(float position_x, float position_y, double len_, double angle_, double mass_, string file)
@@ -143,6 +157,7 @@ void Balk::update_fix(sf::Vector2f fix_pos)
 		ch_origin(sf::Vector2f(5, 0));
 		sf::Vector2f delta = fix_pos - position;
 		setPosition_(position + delta);
+		fasteners[0].get_texture().loadFromFile("./images/fastener_green.png");
 	}
 }
 
@@ -162,12 +177,12 @@ void Balk::update_gravity(float dt)
 			angle = M_PI / 2 - angle;
 			sign = -1;
 		}
-		else if (M_PI / 2 < angle && angle <= M_PI)
+		else if (M_PI / 2 < angle <= M_PI)
 		{
 			angle -= M_PI / 2;
 			sign = -1;
 		}
-		else if (M_PI < angle && angle <= 1.5 * M_PI)
+		else if (M_PI < angle <= 1.5 * M_PI)
 		{
 			angle = 1.5 * M_PI - angle;
 		}
@@ -175,12 +190,12 @@ void Balk::update_gravity(float dt)
 		{
 			angle =- 1.5 * M_PI;
 		}
-		omega += sign * 1.5 * G * sin(angle) * dt;
+		omega += sign * 1.5 * G * cos(angle) * dt / len;
 		rotate_(omega * dt);
 	}
 	else if (!is_child)
 	{
-		speed += dt * G;
+		speed += dt * G / 100;
 		position.y += dt * speed;
 		setPosition_(position);
 	}
@@ -193,6 +208,8 @@ void Balk::update_become_child(Balk* p)
 		set_parent(p);
 		ch_origin(sf::Vector2f(5, 0));
 		setPosition_(parent->get_end());
+		fasteners[0].get_texture().loadFromFile("./images/fastener_green.png");
+		parent->fasteners[1].get_texture().loadFromFile("./images/fastener_green.png");;
 	}
 }
 
@@ -213,6 +230,7 @@ void Balk::set_parent(Balk* b)
 {
 	parent = b;
 	b->is_parent = true;
+	b->child_number++;
 }
 
 void Balk::update_len_inc()
