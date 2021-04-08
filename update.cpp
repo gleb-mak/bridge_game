@@ -44,7 +44,7 @@ void Engine::update(float dt)
 			{
 				balk->is_len_inc = true;
 				balk->update_len_inc();
-		//		break;
+				break;
 			}
 			if (is_delete && !balk->is_parent)
 			{
@@ -53,7 +53,7 @@ void Engine::update(float dt)
 					fastener.get_texture().loadFromFile("./images/fastener.png");
 				}
 				balk = balks.erase(balk);
-		//		break;
+				break;
 			}
 		}
         if (!balk->is_fixed && !balk->is_child && balk->get_sprite().getGlobalBounds().contains(fastener.get_sprite().getPosition()))
