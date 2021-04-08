@@ -47,4 +47,5 @@ private:
 	sf::Vector2f get_begin();
 	void setPosition_(sf::Vector2f new_position);
 	void rotate_(float angle);
+	static double movement_ODE(double t, double angle, double c, double len, double mass);
 };

@@ -1,7 +1,9 @@
+#include "Runge.h"
 #include "balk.h"
 #include <cmath>
 
-#define G 0.1
+#define REZIST_MOMENTUM 0.003
+#define G 0.01
 
 Balk::Balk()
 {
@@ -166,12 +168,17 @@ double Balk::example(double x)
 	return x;
 }
 
+double Balk::movement_ODE(double t, double angle, double c, double len, double mass)
+{
+	return ((3 * G * sin(angle))/(2*len))  -(c/((c == 0)? 1 : fabs(c) )) *(3*REZIST_MOMENTUM)/(mass*len*len);
+}
+
 void Balk::update_gravity(float dt)
 {
 	if (is_fixed)
 	{
 		double angle = sprite.getRotation() * M_PI / 180;
-		int sign = 1;
+		/*int sign = 1;
 		if (angle <= M_PI / 2)
 		{
 			angle = M_PI / 2 - angle;
@@ -189,13 +196,25 @@ void Balk::update_gravity(float dt)
 		else
 		{
 			angle =- 1.5 * M_PI;
+		}*/
+
+		if (angle >= M_PI)
+		{
+			angle -= M_PI;
+			angle = -angle;
 		}
-		omega += sign * 1.5 * G * cos(angle) * dt / len;
-		rotate_(omega * dt);
+		/*omega += sign * 1.5 * G * sin(angle) * dt;
+		rotate_(omega * dt);*/
+		double y[5];
+		int number_of_steps = 4;
+		double h = dt;
+		y[0] = angle;
+		Runge_Kutta_2nd_Order(Balk::movement_ODE, 0, y, omega, h, number_of_steps);
+		rotate_(y[0] - y[2]);
 	}
 	else if (!is_child)
 	{
-		speed += dt * G / 100;
+		speed += dt * G / 10;
 		position.y += dt * speed;
 		setPosition_(position);
 	}
