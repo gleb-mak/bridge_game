@@ -51,8 +51,4 @@ void Engine::input()
 	{
 		is_R_pressed = false;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-    {
-        is_L_pressed = true;
-    }
 }	

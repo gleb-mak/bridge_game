@@ -12,6 +12,13 @@ void Engine::update(float dt)
 	{
 		if (is_left_pressed)
 		{
+	        if (!balk->is_parent && balk->fasteners[1].get_sprite().getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
+            {
+				balk->is_resize = true;
+				sf::Vector2f mouse_pos = vector_i_to_f(sf::Mouse::getPosition(window));
+				balk->update_size(mouse_pos);
+				break;
+            }
 			if (balk->get_sprite().getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 			{
 				balk->is_move = true;
@@ -40,27 +47,31 @@ void Engine::update(float dt)
 				balk->is_rotate = true;
 				balk->update_rotate(dt);
 			}
-			if (is_L_pressed && !balk->is_parent)
-			{
-				balk->is_len_inc = true;
-				balk->update_len_inc();
-				break;
-			}
 			if (is_delete && !balk->is_parent)
 			{
 				if (balk->is_fixed)
 				{
-					fastener.get_texture().loadFromFile("./images/fastener.png");
+					fasteners[0].ch_color("blue");
+				}
+				if (balk->is_end_fixed)
+				{
+					fasteners[1].ch_color("blue");
 				}
 				balk = balks.erase(balk);
 				break;
 			}
 		}
-        if (!balk->is_fixed && !balk->is_child && balk->get_sprite().getGlobalBounds().contains(fastener.get_sprite().getPosition()))
+        if (!balk->is_fixed && !balk->is_child && balk->get_sprite().getGlobalBounds().contains(fasteners[0].get_sprite().getPosition()))
 		{
 			balk->is_fixed = true;
-			balk->update_fix(fastener.get_sprite().getPosition());
-			fastener.get_texture().loadFromFile("./images/fastener_green.png");
+			balk->update_fix(fasteners[0].get_sprite().getPosition());
+			fasteners[0].ch_color("green");
+		}
+		if (!balk->is_end_fixed && (balk->is_child || balk->is_fixed) && balk->fasteners[1].get_sprite().getGlobalBounds().contains(fasteners[1].get_sprite().getPosition()))
+		{
+			balk->is_end_fixed = true;
+			fasteners[1].ch_color("green");
+			balk->update_end_fix(fasteners[1].get_sprite().getPosition());
 		}
 		if (!balk->is_child && !balk->is_fixed)
 		{
@@ -88,8 +99,6 @@ void Engine::update(float dt)
 	}
     is_left_pressed = false;
     is_right_pressed = false;
-//    is_R_pressed = false;
-	is_L_pressed = false;
 	is_delete = false;
 }
 

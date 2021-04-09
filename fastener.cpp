@@ -1,3 +1,4 @@
+#include "Runge.h"
 #include "fastener.h"
 #include <cmath>
 
@@ -18,7 +19,6 @@ void Fastener::initialize(sf::Vector2f pos, string file)
 	texture.loadFromFile("./images/" + file);
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 10, 10));
-    // sprite.setOrigin(sf::Vector2f(5, 5));
     sprite.setPosition(position);
 }
 
@@ -38,24 +38,25 @@ sf::Sprite& Fastener::get_sprite()
 	return sprite;
 }
 
-sf::Vector2f Fastener::get_global_origin(sf::Vector2f origin)
-{
-    float alpha = sprite.getRotation() * M_PI / 180;
-    sf::Vector2f j_1;
-    j_1.x = -sin(alpha - M_PI / 2);
-    j_1.y = cos(alpha - M_PI / 2);
-    sf::Vector2f j_2;
-    j_2.x = -sin(alpha);
-    j_2.y = cos(alpha);
-    return origin.x * j_1 + origin.y * j_2;
-}
-
 void Fastener::ch_origin(sf::Vector2f new_origin)
 {
-    sf::Vector2f global_origin = get_global_origin(sprite.getOrigin());
-    sf::Vector2f global_new_origin = get_global_origin(new_origin);
+    sf::Vector2f global_origin = get_global_origin(sprite.getOrigin(), sprite);
+    sf::Vector2f global_new_origin = get_global_origin(new_origin, sprite);
     sf::Vector2f delta = global_origin - global_new_origin;
     sprite.setPosition(sprite.getPosition() - delta);
     position = sprite.getPosition();
     sprite.setOrigin(new_origin);
 }
+
+void Fastener::ch_color(string color)
+{
+    if (color == "blue")
+    {
+		texture.loadFromFile("./images/fastener.png");
+    }
+    else if (color == "green")
+    {
+		texture.loadFromFile("./images/fastener_green.png");
+    }
+}
+

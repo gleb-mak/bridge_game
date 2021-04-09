@@ -14,7 +14,10 @@ void Engine::draw()
 	{
 		draw_balk(balk);
 	}
-	window.draw(fastener.get_sprite());
+	for (auto& fastener : fasteners)
+	{
+		window.draw(fastener.get_sprite());
+	}
 	window.display();
 }
 
