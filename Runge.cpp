@@ -1,10 +1,109 @@
 #include "Runge.h"
 #include <cmath>
+#include <functional>
+#include <iostream>
+#define REZIST_MOMENTUM 0.001
+
+using namespace std::placeholders;
+
+
+double f(double x, double y, double z, double m, double g, double l)
+{
+    return ((3 * g * sin(y))/(2 * l)) - (z/( (z == 0) ? 1 : fabs(z) )) * (3 * REZIST_MOMENTUM) / (m * l * l);
+}
+
+double g(double x, double y, double z)
+{
+		return (z);
+}
+
+double A1(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return (p1 * p2 * sin(y1 - y2)) / (l1 * l2 * (m1 + m2 * pow(sin(y1 - y2), 2)));
+}
+
+double A2(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return ((p1 * p1 * m2 * l2 * l2 - 2 * p1 * p2 * m2 * l1 * l2 * cos(y1 - y2) + p2 * p2 * (m1 + m2) * l1 * l1) * sin(2 * (y1 - y2))) / (2 * l1 * l1 * l2 * l2 * pow((m1 + m2 * pow(sin(y1 - y2), 2)), 2));
+}
+
+double F1(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return (p1 * l2 - p2 * l1 * cos(y1 - y2)) / (l1 * l1 * l2 * (m1 + m2 * pow(sin(y1 - y2), 2)));
+}
+
+double F2(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return (p2 * (m1 + m2) * l1 - p1 * m2 * l2 * cos(y1 - y2)) / (m2 * l1 * l2 * l2 * (m1 + m2 * pow(sin(y1 - y2), 2)));
+}	
+
+double F3(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return -(m1 + m2) * g * l1 * sin(y1) - A1(p1, p2, y1, y2, l1, l2, m1, m2, g) + A2(p1, p2, y1, y2, l1, l2, m1, m2, g);
+}
+
+double F4(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return -m2 * g * l2 * sin(y2) + A1(p1, p2, y1, y2, l1, l2, m1, m2, g) - A2(p1, p2, y1, y2, l1, l2, m1, m2, g);
+}
+
+double f1(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return p1;
+}
+
+double f2(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return p2;
+}
+
+double f3(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return (-g*(2*m1+m2)*sin(y1) - m2*g*sin(y1-2*y2) - 2*sin(y1-y2)*m2*(p2*p2*l2+p1*p1*l1*cos(y1-y2))) / (l1*(2*m2+m2-m2*cos(2*y1-2*y2)));
+}
+
+double f4(double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	return (2*sin(y1-y2)*(p1*p1*l1*(m1+m2)+g*(m1+m2)*cos(y1)+p2*p2*l2*m2*cos(y1-y2))) / (l2*(2*m1+m2-m2*cos(2*y1-2*y2)));
+}
+
+double Runge_Kutta(double Yo, double Xo, double& Zo, double dt, double m, double G, double l)
+{
+	double Y1, Z1;
+	double k1, k2, k4, k3;
+	double q1, q2, q4, q3;
+	int n = 5;
+	double h = dt / n;
+	auto f1 = std::bind(f, _1, _2, _3, m, G, l);
+	for (int i = 0; i < n; ++i)
+	{
+		k1 = h * f1(Xo, Yo, Zo);
+		q1 = h * g(Xo, Yo, Zo);
+		
+		k2 = h * f1(Xo + h/2.0, Yo + q1/2.0, Zo + k1/2.0);
+		q2 = h * g(Xo + h/2.0, Yo + q1/2.0, Zo + k1/2.0);
+		
+		k3 = h * f1(Xo + h/2.0, Yo + q2/2.0, Zo + k2/2.0);
+		q3 = h * g(Xo + h/2.0, Yo + q2/2.0, Zo + k2/2.0);
+		
+		k4 = h * f1(Xo + h, Yo + q3, Zo + k3);
+		q4 = h * g(Xo + h, Yo + q3, Zo + k3);
+		
+		Z1 = Zo + (k1 + 2.0*k2 + 2.0*k3 + k4)/6.0;
+		Y1 = Yo + (q1 + 2.0*q2 + 2.0*q3 + q4)/6.0;
+
+		Yo = Y1;
+		Zo = Z1;
+		Xo += h;
+	}
+	return Y1;
+}
 
 void Runge_Kutta_2nd_Order( double (*f)(double, double, double, double, double), double x0,
-                        double y[], double& c, double h, int number_of_steps, double len, double mass ) {
+                        double y[], double& c, double dt, int number_of_steps, double len, double mass ) {
 
    double k1, k2, k3, k4;
+   double h = dt / number_of_steps;
    double h2 = 0.5 * h;
    double ych2;
    int i;
@@ -21,6 +120,62 @@ void Runge_Kutta_2nd_Order( double (*f)(double, double, double, double, double),
          //printf("the initial alpha is %lf, the next alpha is %lf, the curr speed is %lf\n", y[0], y[1], c  );
 
 }
+
+std::vector<double> Runge_Kutta_4_eq(double t0, double dt, double p1, double p2, double y1, double y2, double l1, double l2, double m1, double m2, double g)
+{
+	std::vector<double> ans(4);
+	double y1_new, y2_new, p1_new, p2_new;
+	std::vector<double> k1(4), k2(4), k3(4), k4(4);
+	int n = 5;
+	double h = dt / n;
+	auto g1 = std::bind(f1, _1, _2, _3, _4, l1, l2, m1, m2, g);
+    auto g2 = std::bind(f2, _1, _2, _3, _4, l1, l2, m1, m2, g);
+    auto g3 = std::bind(f3, _1, _2, _3, _4, l1, l2, m1, m2, g);
+    auto g4 = std::bind(f4, _1, _2, _3, _4, l1, l2, m1, m2, g);
+
+	for (int i = 0; i < n; ++i)
+	{
+		k1[0] = h * g1(p1, p2, y1, y2);
+		k1[1] = h * g2(p1, p2, y1, y2);
+		k1[2] = h * g3(p1, p2, y1, y2);
+		k1[3] = h * g4(p1, p2, y1, y2);
+
+		k2[0] = h * g1(p1 + k1[2]/2.0, p2 + k1[3]/2.0, y1 + k1[0]/2.0, y2 + k1[1]/2.0);
+		k2[1] = h * g2(p1 + k1[2]/2.0, p2 + k1[3]/2.0, y1 + k1[0]/2.0, y2 + k1[1]/2.0);
+		k2[2] = h * g3(p1 + k1[2]/2.0, p2 + k1[3]/2.0, y1 + k1[0]/2.0, y2 + k1[1]/2.0);
+		k2[3] = h * g4(p1 + k1[2]/2.0, p2 + k1[3]/2.0, y1 + k1[0]/2.0, y2 + k1[1]/2.0);
+		
+		k3[0] = h * g1(p1 + k2[2]/2.0, p2 + k2[3]/2.0, y1 + k2[0]/2.0, y2 + k2[1]/2.0);
+		k3[1] = h * g2(p1 + k2[2]/2.0, p2 + k2[3]/2.0, y1 + k2[0]/2.0, y2 + k2[1]/2.0);
+		k3[2] = h * g3(p1 + k2[2]/2.0, p2 + k2[3]/2.0, y1 + k2[0]/2.0, y2 + k2[1]/2.0);
+		k3[3] = h * g4(p1 + k2[2]/2.0, p2 + k2[3]/2.0, y1 + k2[0]/2.0, y2 + k2[1]/2.0);
+		
+		k4[0] = h * g1(p1 + k3[2]/2.0, p2 + k3[3]/2.0, y1 + k3[0]/2.0, y2 + k3[1]/2.0);
+		k4[1] = h * g2(p1 + k3[2]/2.0, p2 + k3[3]/2.0, y1 + k3[0]/2.0, y2 + k3[1]/2.0);
+		k4[2] = h * g3(p1 + k3[2]/2.0, p2 + k3[3]/2.0, y1 + k3[0]/2.0, y2 + k3[1]/2.0);
+		k4[3] = h * g4(p1 + k3[2]/2.0, p2 + k3[3]/2.0, y1 + k3[0]/2.0, y2 + k3[1]/2.0);
+		
+		y1_new = y1 + (k1[0] + 2.0*k2[0] + 2.0*k3[0] + k4[0])/6.0;
+        y2_new = y2 + (k1[1] + 2.0*k2[1] + 2.0*k3[1] + k4[1])/6.0;
+        p1_new = p1 + (k1[2] + 2.0*k2[2] + 2.0*k3[2] + k4[2])/6.0;
+        p2_new = p2 + (k1[3] + 2.0*k2[3] + 2.0*k3[3] + k4[3])/6.0;
+
+		y1 = y1_new;
+		y2 = y2_new;
+		p1 = p1_new;
+		p2 = p2_new;
+		t0 += h;
+	}
+	ans[0] = y1;
+	ans[1] = y2;
+	// ans[2] = g1(p1, p2, y1, y2);
+	// ans[3] = g2(p1, p2, y1, y2);
+	ans[2] = p1;
+	ans[3] = p2;
+	// std::cout << y1 << "\t" << y2 << "\n";
+	return ans;
+}
+
 
 double vectors_multiply(sf::Vector2f v1, sf::Vector2f v2)
 {
@@ -59,5 +214,11 @@ sf::Vector2f get_global_origin(sf::Vector2f origin, sf::Sprite& sprite)
     j_2.x = -sin(alpha);
     j_2.y = cos(alpha);
     return origin.x * j_1 + origin.y * j_2;
+}
+
+
+double P(double m1, double m2, double l1, double l2)
+{
+
 }
 

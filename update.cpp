@@ -1,12 +1,18 @@
 #include "engine.h"
+#include <iostream>
+#include <algorithm>
 
 sf::Vector2f vector_i_to_f(sf::Vector2i v)
 {
 	return sf::Vector2f((float)v.x, (float)v.y);
 }
 
-void Engine::update(float dt)
+void Engine::update(double dt)
 {
+	if (is_gravity)
+	{
+		g_time += dt;
+	}
 	list<Balk>::iterator balk = balks.begin();
 	while (balk != balks.end())
 	{
@@ -64,6 +70,7 @@ void Engine::update(float dt)
         if (!balk->is_fixed && !balk->is_child && balk->get_sprite().getGlobalBounds().contains(fasteners[0].get_sprite().getPosition()))
 		{
 			balk->is_fixed = true;
+			add_chain(std::addressof(*balk));
 			balk->update_fix(fasteners[0].get_sprite().getPosition());
 			fasteners[0].ch_color("green");
 		}
@@ -81,6 +88,33 @@ void Engine::update(float dt)
 				if ((item.is_fixed || item.is_child) && it != balk && balk->get_sprite().getGlobalBounds().intersects(item.fasteners[1].get_sprite().getGlobalBounds()))
 				{
 					balk->is_child = true;
+					for (auto& chain : chains)
+					{
+						if (chain.get_balks().front() == &item)
+						{
+							if (!item.is_parent)
+							{
+								chain.add_balk(std::addressof(*balk));
+							}
+							break;
+						}
+					}
+					// for (auto& chain : chains)
+					// {
+					// 	if (std::find(chain.get_balks().begin(), chain.get_balks().end(), &item) != chain.get_balks().end())
+					// 	{
+					// 		if (!item.is_parent)
+					// 		{
+					// 			chain.add_balk(std::addressof(*balk));
+					// 		}
+					// 		else
+					// 		{
+					// 			chains.push_back(chain.copy());
+					// 			chains.back().add_balk(std::addressof(*balk));
+					// 		}
+					// 		break;
+					// 	}
+					// }
 					balk->update_become_child(&item);
 					break;
 				}
@@ -93,9 +127,16 @@ void Engine::update(float dt)
 		}
 		if (is_gravity)
 		{
-			balk->update_gravity(dt);
+			balk->update_gravity(dt, g_time);
 		}
 		balk++;
+	}
+	for (auto& chain : chains)
+	{
+		if (is_gravity)
+		{
+			chain.update_gravity(dt, g_time);
+		}
 	}
     is_left_pressed = false;
     is_right_pressed = false;

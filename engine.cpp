@@ -2,7 +2,17 @@
 
 Engine::Engine()
 {
+	g_time = 0.0;
 	window.create(sf::VideoMode(1000, 800), "Game");
+	g = 9.81; 
+	font.loadFromFile("./images/font.ttf");
+	string str = "G: " + to_string(g);
+	text.setFont(font);
+	text.setString(str);
+	text.setCharacterSize(40);
+	text.setFillColor(sf::Color::Red);
+	text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+	text.setPosition(50 ,750);
 	balks.resize(2);
 	fasteners.resize(2);
 	int i = 1;
@@ -26,7 +36,7 @@ void Engine::start()
 	sf::Clock clock;
 	while(window.isOpen())
 	{
-		float time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
+		double time = clock.getElapsedTime().asMicroseconds(); //дать прошедшее время в микросекундах
 		clock.restart(); //перезагружает время
 		time = time / 800;
 		input();
@@ -38,4 +48,9 @@ void Engine::start()
 void Engine::add_balk()
 {
 	balks.resize(balks.size() + 1);
+}
+
+void Engine::add_chain(Balk* b)
+{
+	chains.push_back(b);
 }

@@ -3,7 +3,7 @@
 #include <cmath>
 
 #define REZIST_MOMENTUM 0.003
-#define G 0.01
+#define G 0.001
 
 Balk::Balk()
 {
@@ -23,7 +23,7 @@ Balk::Balk()
 	is_child = false;
 	is_parent = false;
 	is_resize = false;
-	is_in_chain = false;
+	is_in_fixed_chain = false;
 	parent = NULL;
     texture.loadFromFile("./images/stick.png");
 	sprite.setTexture(texture);
@@ -54,7 +54,7 @@ Balk::~Balk()
 		Balk* tmp = this;
 		while (tmp != NULL)
         {
-            tmp->is_in_chain = false;
+            tmp->is_in_fixed_chain = false;
             tmp = tmp->parent;
         }
 	}
@@ -72,6 +72,26 @@ void Balk::initialize(float position_x, float position_y, double len_, double an
     sprite.setTextureRect(sf::IntRect(0, 0, 10, len));
     setPosition_(position);
 	rotate_(angle);
+}
+
+double Balk::get_mass()
+{
+	return mass;
+}
+
+double Balk::get_len()
+{
+	return len;
+}
+
+double Balk::get_omega()
+{
+	return omega;
+}
+
+void Balk::set_omega(double o)
+{
+	omega = o;
 }
 
 void Balk::setPosition_(sf::Vector2f new_pos)
@@ -114,7 +134,7 @@ sf::Vector2f Balk::get_end()
 
 void Balk::update_move(sf::Vector2f pos)
 {
-	if (is_move && !is_fixed && !is_child && !is_in_chain)
+	if (is_move && !is_fixed && !is_child && !is_in_fixed_chain)
 	{
         if (sprite.getOrigin() != sf::Vector2f(5, len / 2))
         {
@@ -128,7 +148,7 @@ void Balk::update_move(sf::Vector2f pos)
 
 void Balk::update_rotate(float dt)
 {
-	if (is_rotate && !is_in_chain)
+	if (is_rotate && !is_in_fixed_chain)
 	{
 		rotate_(dt * 0.1);
 		is_rotate = false;
@@ -162,18 +182,20 @@ void Balk::update_fix(sf::Vector2f fix_pos)
 	}
 }
 
+
+
 double Balk::movement_ODE(double t, double angle, double c, double len, double mass)
 {
 	return ((3 * G * sin(angle))/(2*len))  -(c/((c == 0)? 1 : fabs(c) )) * (3 * REZIST_MOMENTUM) / (mass * len * len);
 }
 
-void Balk::update_gravity(float dt)
+void Balk::update_gravity(double dt, double t)
 {
-	if (is_in_chain)
+	if (is_in_fixed_chain)
 	{
 		return;
 	}
-	if (is_fixed)
+	if (is_fixed && !is_parent)
 	{
 		double angle = sprite.getRotation() * M_PI / 180;
 		if (angle >= M_PI)
@@ -181,19 +203,21 @@ void Balk::update_gravity(float dt)
 			angle -= M_PI;
 			angle = -angle;
 		}
-		double y[5];
-		int number_of_steps = 4;
-		double h = dt;
-		y[0] = angle;
-		Runge_Kutta_2nd_Order(Balk::movement_ODE, 0, y, omega, h, number_of_steps, len, mass);
-		rotate_(y[0] - y[4]);
+		// double y[5];
+		// int number_of_steps = 4;
+		// double h = dt;
+		// y[0] = angle;
+		// Runge_Kutta_2nd_Order(Balk::movement_ODE, 0, y, omega, h, number_of_steps, len, mass);
+		// rotate_((y[0] - y[4]) * 180/M_PI);
+		double new_angle = Runge_Kutta(angle, t, omega, dt, mass, G, len);
+		rotate_((angle - new_angle) * 180/M_PI);
 	}
-	else if (!is_child)
-	{
-		speed += dt * G / 10;
-		position.y += dt * speed;
-		setPosition_(position);
-	}
+	// else if (!is_child)
+	// {
+	// 	speed += dt * G;
+	// 	position.y += dt * speed;
+	// 	setPosition_(position);
+	// }
 }
 
 void Balk::update_become_child(Balk* p)
@@ -242,7 +266,7 @@ void Balk::set_len(double new_len)
 
 void Balk::update_size(sf::Vector2f mouse_pos)
 {
-	if (is_resize && !is_in_chain)
+	if (is_resize && !is_in_fixed_chain)
 	{
 		if (sprite.getOrigin() != sf::Vector2f(5, 0))
 		{
@@ -269,7 +293,7 @@ void Balk::update_end_fix(sf::Vector2f fix_pos)
 		Balk* tmp = this; 
 		while (tmp != NULL)
 		{
-			tmp->is_in_chain = true;
+			tmp->is_in_fixed_chain = true;
 			tmp = tmp->parent;
 		}
 	}

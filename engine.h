@@ -1,6 +1,7 @@
 #pragma once
 #include "balk.h"
 #include "fastener.h"
+#include "chain.h"
 #include <SFML/Graphics.hpp>
 #include <list>
 #include <vector>
@@ -14,10 +15,14 @@ public:
 	Engine();
 	void start();
 private:
-	void update(float time);
+	double g;
+	double resistance;
+	double g_time;
+	void update(double dt);
 	void input();
 	void draw();
 	void add_balk();
+	void add_chain(Balk* b);
 	bool is_left_pressed;
 	bool is_right_pressed;
 	bool is_R_pressed;
@@ -27,7 +32,10 @@ private:
 	sf::RenderWindow window;
 	sf::Texture background_texture;
 	sf::Sprite background_sprite;
+	sf::Text text;
+	sf::Font font;
 	list<Balk> balks;
+	list<Chain> chains;
 	vector<Fastener> fasteners;
-	void draw_balk(Balk& balk);
+	// void draw_balk(Balk& balk);
 };

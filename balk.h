@@ -12,12 +12,11 @@ public:
 	Balk();
 	~Balk();
 	void initialize(float position_x, float position_y, double len, double angle_, double mass_, string file);
-	static double example(double x);
 	void update_move(sf::Vector2f pos);
 	void update_rotate(float dt);
 	void update_fix(sf::Vector2f fix_pos);
 	void update_end_fix(sf::Vector2f fix_pos);
-	void update_gravity(float time);
+	void update_gravity(double dt, double t);
 	void update_become_child(Balk* p);
 	void update_child();
 	void update_len_inc();
@@ -33,9 +32,14 @@ public:
 	bool is_child;
 	bool is_parent;
 	bool is_resize;
-	bool is_in_chain;
+	bool is_in_fixed_chain;
 	int child_number;
-	vector<Fastener> fasteners; 
+	vector<Fastener> fasteners;
+	double get_mass();
+	double get_len();
+	double get_omega();
+	void rotate_(float angle);
+	void set_omega(double new_omega);
 private:
     double len;
     double angle;
@@ -51,7 +55,6 @@ private:
 	sf::Vector2f get_begin();
 	void setPosition_(sf::Vector2f new_position);
 	void setRotation_(float angle);
-	void rotate_(float angle);
 	static double movement_ODE(double t, double angle, double c, double len, double mass);
 	void set_len(double new_len);
 };
