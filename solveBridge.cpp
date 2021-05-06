@@ -1,6 +1,7 @@
 #pragma once
-#include "Chain.h"
+#include "chain.h"
 #include <cmath>
+#include "cargo.h"
 #define G 0.0005
 #define MAX_FORCE 0.1
 
@@ -38,17 +39,17 @@ double find_inertial_momentum(Chain a)
 {
     double momentum = 0;
     sf::Vector3f l_sum = sf::Vector3f(0, 0, 0);
-    for (int i = 0; i < a.length; i++)
+    for (int i = 0; i < a.GetLen(); i++)
     {
         if (i == 0)
         {
-            momentum += a[i].mass * find_square_module(a[i].len_vecotor) /3;
-            l_sum += a[i].len_vector/2;
+            momentum += a[i].get_mass() * find_square_module(a[i].len_vector()) /3;
+            l_sum += a[i].len_vector()/(float)2;
         }
         else
         {
-            l_sum += a[i-1].len_vector/2 + a[i].len_vector/2;
-            momentum += a[i].mass * (find_square_module(l_sum)) + a[i].mass*find_square_module(a[i].len_vector)/12; //теорема Гюйгенса Штейнера
+            l_sum += a[i-1].len_vector()/(float)2 + a[i].len_vector()/(float)2;
+            momentum += a[i].get_mass() * (find_square_module(l_sum)) + a[i].get_mass()*find_square_module(a[i].len_vector())/12; //теорема Гюйгенса Штейнера
         }
     }
     return momentum;
@@ -56,38 +57,38 @@ double find_inertial_momentum(Chain a)
 
 void createSolidChains(Chain bridge, int broken_node) //broken_node [0...n], bridge[0...n-1] bridge_len [0...n]
 {
-    left_piece.clear();
-    right_piece.clear();
+    left_piece.Clear();
+    right_piece.Clear();
 
     if (broken_node == 0)
     {
-        left_piece.set_length(0);
-        right_piece.set_length(bridge.length);
-        for (int i = 0; i < bridge.length; i++)
+        left_piece.SetLen(0);
+        right_piece.SetLen(bridge.GetLen());
+        for (int i = 0; i < bridge.GetLen(); i++)
         {
-            right_piece[i] = bridge[bridge.length - 1 - i];
+            right_piece[i] = bridge[bridge.GetLen() - 1 - i];
         }
     }
-    else if (broken_node == bridge.length)
+    else if (broken_node == bridge.GetLen())
     {
-        right_piece.set_length(0);
-        left_piece.set_length(bridge.length);
-        for (int i = 0; i < bridge.length; i++)
+        right_piece.SetLen(0);
+        left_piece.SetLen(bridge.GetLen());
+        for (int i = 0; i < bridge.GetLen(); i++)
         {
             left_piece[i] = bridge[i];
         }
     }
     else
     {   
-        left_piece.set_length(broken_node);
-        right_piece.set_length(bridge.length - broken_node);
+        left_piece.SetLen(broken_node);
+        right_piece.SetLen(bridge.GetLen() - broken_node);
         int k;
         for (k = 0; k < broken_node; k++)
         {
             left_piece[k] = bridge[k];
         }
         int j = 0;
-        for (int i = bridge.length -1; i >= k; i--)
+        for (int i = bridge.GetLen() -1; i >= k; i--)
         {
             right_piece[j] = bridge[i];
             j++;
@@ -98,7 +99,7 @@ void createSolidChains(Chain bridge, int broken_node) //broken_node [0...n], bri
 }
 
 
-void solveBridge(Chain bridge, cargo body, double dt)
+void solveBridge(Chain bridge, Cargo body, double dt)
 {
     if (body.isFinished)
     {
@@ -117,77 +118,77 @@ void solveBridge(Chain bridge, cargo body, double dt)
         sf::Vector3f l_sum = sf::Vector3f(0, 0, 0); // создали вектор который в конечном счете будет хранить вектор соединящий начало и конец моста, также он будет являться расстоянием от начала моста до iой балки
         sf::Vector3f moment_sum1 = sf::Vector3f(0, 0, 0); //результирующий момент сил относительно начала моста
         int i;
-        for (i = 0; i < bridge.length; i++)    // 0..n-1
+        for (i = 0; i < bridge.GetLen(); i++)    // 0..n-1
         {
             if (i == 0)
             {
-                l_sum += bridge[i].len_vector / 2;
+                l_sum += bridge[i].len_vector() / (float)2;
             }
             else
             {
-                l_sum += (bridge[i - 1].len_vector / 2) + (bridge[i].len_vector / 2);
+                l_sum += (bridge[i - 1].len_vector() / (float)2) + (bridge[i].len_vector() / (float)2);
             }
-            moment_sum1 += (vector_mul(l_sum, gravity_vector))*bridge[i].mass; //момент силы тяжести относительно начала моста для i балки
+            moment_sum1 += (vector_mul(l_sum, gravity_vector))*(float)bridge[i].get_mass(); //момент силы тяжести относительно начала моста для i балки
         }
-        l_sum +=  (bridge[i].len_vector / 2); // вектор, соединяющий начало и конец моста
+        l_sum +=  (bridge[i].len_vector()/(float)2); // вектор, соединяющий начало и конец моста
 
         sf::Vector3f cargo_vector = sf::Vector3f(0, 0, 0); //вектор, соединяющий начало моста и груз
-        for(i = 0; i < body.current_balk; i++) //body.current_balk \in [0, n];
+        for(i = 0; i < body.GetCurrentBalk(); i++) //body.current_balk \in [0, n];
         {
-            cargo_vector += bridge[i].len_vector;
+            cargo_vector += bridge[i].len_vector();
         }
-        sf::Vector3f current_balk_len_vector = bridge[body.current_balk].len_vector;
-        cargo_vector += (current_balk_len_vector * body.position)/bridge[body.current_balk].length; // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
+        sf::Vector3f current_balk_len_vector = bridge[body.GetCurrentBalk()].len_vector();
+        cargo_vector += (current_balk_len_vector * body.position)/bridge[body.GetCurrentBalk()].get_len(); // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
 
-        sf::Vector3f cargo_moment1 = vector_mul(cargo_vector, gravity_vector)*body.mass; // момент силы тяжести груза относительно начала моста
+        sf::Vector3f cargo_moment1 = vector_mul(cargo_vector, gravity_vector)*body.get_mass(); // момент силы тяжести груза относительно начала моста
         
         moment_sum1 += cargo_moment1; // теперь данный вектор в теории равен моменту силы реакции последнего крепежа относительно начала моста, помноженного на минус единицу
 
         float N_end_y = moment_sum1.z/(-1*l_sum.x); //Игрек координата силы реакции последнего крепежа; здесь учитывается,что вектор соединяющий начало и конец моста имеет координаты (l_sum.x, 0, 0),
                                                    //поскольку точки крепления находятся на одном уровне.
         float total_mass = 0;
-        for (i = 0; i < bridge.length; i++)
+        for (i = 0; i < bridge.GetLen(); i++)
         {
-            total_mass += bridge[i].mass;
+            total_mass += bridge[i].get_mass();
         }
         float N_begin_y =-1*total_mass*G -N_end_y; //Игрек координата силы реакции самого первого крепежа; по второму закону Ньютона в проекции на ось y, N_end_y + N_begin_y = -Mg, где M - сумма масс балок
 
         //посчитаем момент всех сил тяжести системы отсносительно второго от начала моста шарнирного крепления кроме момента груза:
         sf::Vector3f moment_sum2 = sf::Vector3f(0, 0, 0);
         sf::Vector3f temp_l_vector = sf::Vector3f(0, 0, 0); //вектор отсчитывающий расстояние до iой балки
-        moment_sum2 -= vector_mul(bridge[0].len_vector/2, gravity_vector)*bridge[0].mass; // первая балка теперь слева от полюса, поэтому знак минус
-        for (i = 1; i < bridge.length; i++)
+        moment_sum2 -= vector_mul(bridge[0].len_vector()/(float)2, gravity_vector)*(float)bridge[0].get_mass(); // первая балка теперь слева от полюса, поэтому знак минус
+        for (i = 1; i < bridge.GetLen(); i++)
         {
             if (i == 1)
             {
-                temp_l_vector += bridge[i].len_vector/2;
+                temp_l_vector += bridge[i].len_vector()/(float)2;
             }
             else
             {
-                temp_l_vector += bridge[i - 1].len_vector/2 + bridge[i].len_vector/2;
+                temp_l_vector += bridge[i - 1].len_vector()/(float)2 + bridge[i].len_vector()/(float)2;
             }
-            moment_sum2 += vector_mul(temp_l_vector, gravity_vector)*bridge[i].mass;
+            moment_sum2 += vector_mul(temp_l_vector, gravity_vector)*(float)bridge[i].get_mass();
         }
         //посчитаем момент силы тяжести тела относительно полюса во втором шарнирном креплении в зависимости от его расположения
         sf::Vector3f body_shoulder = sf::Vector3f(0, 0, 0);
         sf::Vector3f cargo_moment2 = sf::Vector3f(0, 0, 0);
-        if (body.current_balk == 0) //груз слева от полюса
+        if (body.GetCurrentBalk() == 0) //груз слева от полюса
         {
-            body_shoulder = (bridge[0].len_vector * body.position)/bridge[0].length - bridge[0].len_vector;
-            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*body.mass;
+            body_shoulder = (bridge[0].len_vector() * body.position)/bridge[0].get_len() - bridge[0].len_vector();
+            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*(float)body.get_mass();
         }
         else //груз справа от полюса
         {
             int j;
-            for (j = 1; j < body.current_balk; j++)
+            for (j = 1; j < body.GetCurrentBalk(); j++)
             {
-                body_shoulder += bridge[j].len_vector;
+                body_shoulder += bridge[j].len_vector();
             }
-            body_shoulder += (bridge[j].len_vector * body.position)/bridge[j].length;  // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
-            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*body.mass;
+            body_shoulder += (bridge[j].len_vector() * body.position)/bridge[j].get_len();  // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
+            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*body.get_mass();
         }
         moment_sum2 += cargo_moment2; // теперь в теории -1*moment_sum2 равен сумме моментов -1*vector_mul(l_1,N_1) + vector_mul((L-l_1)*N_n+1)
-        sf::Vector3f l_1 = bridge[0].len_vector;
+        sf::Vector3f l_1 = bridge[0].len_vector();
         sf::Vector3f L_l_1 = l_sum -l_1; //L_l_1 = L - l_1
 
         float N_begin_x = (l_1.x*N_begin_y - moment_sum2.z - L_l_1.x*N_end_y)/(l_1.y+L_l_1.y); //Икс координата силы реакции самого первого крепежа
@@ -196,28 +197,28 @@ void solveBridge(Chain bridge, cargo body, double dt)
         sf::Vector3f N_beg_vect = sf::Vector3f(N_begin_x, N_begin_y, 0); 
         // по второму закону Ньютона посчитаем весь массив векторов N от 0 до n
         reactions.push_back(N_beg_vect);
-        for (int j = 0; j < bridge.length; j++)
+        for (int j = 0; j < bridge.GetLen(); j++)
         {
             if (j == 0)
             {
-                if(body.current_balk != 0)
+                if(body.GetCurrentBalk() != 0)
                 {
-                    reactions.push_back(-bridge[0].mass*gravity_vector - reactions[0]); // [N_1, N_2]
+                    reactions.push_back(-(float)bridge[0].get_mass()*gravity_vector - reactions[0]); // [N_1, N_2]
                 }
                 else
                 {
-                    reactions.push_back(-bridge[0].mass*gravity_vector - reactions[0] - body.mass*gravity_vector);
+                    reactions.push_back(-(float)bridge[0].get_mass()*gravity_vector - reactions[0] - (float)body.get_mass()*gravity_vector);
                 }
             }
             else
             {
-                if (body.current_balk != j)
+                if (body.GetCurrentBalk() != j)
                 {
-                    reactions.push_back(reactions[j] - bridge[j].mass*gravity_vector);
+                    reactions.push_back(reactions[j] - (float)bridge[j].get_mass()*gravity_vector);
                 }
                 else
                 {
-                    reactions.push_back(reactions[j] - bridge[j].mass*gravity_vector - body.mass*gravity_vector);
+                    reactions.push_back(reactions[j] - (float)bridge[j].get_mass()*gravity_vector - (float)body.get_mass()*gravity_vector);
                 }
             }
         }
@@ -232,17 +233,17 @@ void solveBridge(Chain bridge, cargo body, double dt)
         }
         // обсчет поведения тела на мосту, считаем что точка движется бесконечно медленно, то есть ее импульс можно не учитывать при подсчете влияния на мост
         double pathlen = body.velocity * dt;
-        while (body.posiion + pathlen > bridge[body.current_balk].length)  // путь до конца балки может быть слишком короткой и тело за dt перескакивает на следующую балку
+        while (body.position + pathlen > bridge[body.GetCurrentBalk()].get_len())  // путь до конца балки может быть слишком короткой и тело за dt перескакивает на следующую балку
         {
-            pathlen -= bridge[body.current_balk].length - body.position;
-            if (body.current_balk + 1 == bridge.length)
+            pathlen -= bridge[body.GetCurrentBalk()].get_len() - body.position;
+            if (body.GetCurrentBalk() + 1 == bridge.GetLen())
             {
                 body.isFinished = true;                                  //тело доехало до конца моста
                 return;
             }
             else
             {
-                body.current_balk += 1;
+                body.SetCurrentBalk(body.GetCurrentBalk() + 1);
                 body.position = 0;
             }
         }
