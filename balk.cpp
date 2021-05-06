@@ -298,3 +298,8 @@ void Balk::update_end_fix(sf::Vector2f fix_pos)
 		}
 	}
 }
+
+sf::Vector2f Balk::len_vector()
+{
+	return get_end() - get_begin();
+}

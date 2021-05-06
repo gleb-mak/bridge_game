@@ -1,22 +1,22 @@
 #pragma once
-#include "chain.h"
+#include "Chain.h"
 #include <cmath>
 #define G 0.0005
 #define MAX_FORCE 0.1
 
-chain left_piece;
-chain right_piece;
+Chain left_piece;
+Chain right_piece;
 
 double lp_momentum;
 double rp_momentum;
 
-//chain должна облажать 1)chain -- массив балок
+//Chain должна облажать 1)Chain -- массив балок
 //у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
 //cargo имеет свойство body.current_balk текущая балка на которой находится тело от нуля до n-1
 //cargo имеет массу cargo.mass
-//у chain есть свойство динамическое длины и есть метод setlen и getlen. Setlen буквально аллоцирует память
-//у chain есть метод clear() который очищает массив цепочек
-//у chain есть свойство double inertial_momentum 
+//у Chain есть свойство динамическое длины и есть метод setlen и getlen. Setlen буквально аллоцирует память
+//у Chain есть метод clear() который очищает массив цепочек
+//у Chain есть свойство double inertial_momentum 
 
 sf::Vector3f vector_mul (sf::Vector3f left, sf::Vector3f right)
 {
@@ -34,7 +34,7 @@ double find_square_module(sf::Vector3f a)
     return (a.x*a.x + a.y*a.y + a.z*a.z);
 }
 
-double find_inertial_momentum(chain a)
+double find_inertial_momentum(Chain a)
 {
     double momentum = 0;
     sf::Vector3f l_sum = sf::Vector3f(0, 0, 0);
@@ -54,7 +54,7 @@ double find_inertial_momentum(chain a)
     return momentum;
 }
 
-void createSolidChains(chain bridge, int broken_node) //broken_node [0...n], bridge[0...n-1] bridge_len [0...n]
+void createSolidChains(Chain bridge, int broken_node) //broken_node [0...n], bridge[0...n-1] bridge_len [0...n]
 {
     left_piece.clear();
     right_piece.clear();
@@ -93,12 +93,12 @@ void createSolidChains(chain bridge, int broken_node) //broken_node [0...n], bri
             j++;
         }
     }
-    left_piece.inertial_momentum = find_inertial_momentum(left_chain);
-    right_piece.inertial_momentum = find_inertial_momentum(right_chain);
+    left_piece.inertial_momentum = find_inertial_momentum(left_Chain);
+    right_piece.inertial_momentum = find_inertial_momentum(right_Chain);
 }
 
 
-void solveBridge(chain bridge, cargo body, double dt)
+void solveBridge(Chain bridge, cargo body, double dt)
 {
     if (body.isFinished)
     {
@@ -106,7 +106,7 @@ void solveBridge(chain bridge, cargo body, double dt)
     }
     if (bridge.is_broken)
     {
-        //render two solid chains
+        //render two solid Chains
     }
     else
     {   

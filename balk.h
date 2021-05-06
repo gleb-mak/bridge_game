@@ -24,6 +24,7 @@ public:
 	sf::Sprite& get_sprite();
 	void set_parent(Balk* b);
 	sf::Vector2f get_end();
+	sf::Vector2f len_vector();
 	bool is_move;
 	bool is_rotate;
 	bool is_fixed;
