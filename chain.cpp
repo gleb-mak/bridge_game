@@ -136,3 +136,8 @@ void Chain::ch_is_broken()
 {
 	is_broken = !is_broken;
 }
+
+bool Chain::get_is_broken()
+{
+	return is_broken;
+}
