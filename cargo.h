@@ -16,6 +16,7 @@ public:
 	void move_right(float dt);
 	bool is_begin;
 	bool is_finished;
+	bool is_initialized;
 	sf::Sprite get_sprite();
 private:
 	double position;

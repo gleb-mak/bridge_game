@@ -16,10 +16,16 @@ void Engine::update(double dt)
 		g_time += dt;
 		if (body.is_begin)
 		{
+			if (!body.is_initialized)
+			{
+				body.is_initialized = true;
+				body.set_current_balk(0);
+			}
 			for (auto& chain : chains)
 			{
-				if (chain.is_fixed)
+			if (chain.is_fixed)
 					solveBridge(chain, body, dt);
+					continue;
 			}
 		}
 	}
@@ -112,7 +118,7 @@ void Engine::update(double dt)
 					balk->is_child = true;
 					for (auto& chain : chains)
 					{
-						if (chain.get_balks().front() == &item)
+						if (chain.get_balks().back() == &item)
 						{
 							if (!item.is_parent)
 							{

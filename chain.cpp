@@ -110,7 +110,7 @@ void Chain::SetLen(int len)
 
 int Chain::GetLen()
 {
-	return balks.capacity();
+	return balks.size();
 }
 
 void Chain::Clear()

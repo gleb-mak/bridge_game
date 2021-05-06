@@ -5,6 +5,7 @@ Cargo::Cargo()
 	mass = 10.0;
 	speed = 1;
 	current_balk = -1;
+	is_initialized = false;
 	is_begin = false;
 	is_finished = false;
 	texture.loadFromFile("./images/stick.png");

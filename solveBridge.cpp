@@ -124,7 +124,7 @@ void solveBridge(Chain& bridge, Cargo& body, double dt)
             }
             moment_sum1 += (vector_mul(l_sum, gravity_vector))*(float)bridge[i].get_mass(); //момент силы тяжести относительно начала моста для i балки
         }
-        l_sum +=  (bridge[i].len_vector()/(float)2); // вектор, соединяющий начало и конец моста
+        l_sum +=  (bridge[i - 1].len_vector()/(float)2); // вектор, соединяющий начало и конец моста
 
         sf::Vector3f cargo_vector = sf::Vector3f(0, 0, 0); //вектор, соединяющий начало моста и груз
         for(i = 0; i < body.get_current_balk(); i++) //body.current_balk \in [0, n];
@@ -161,7 +161,7 @@ void solveBridge(Chain& bridge, Cargo& body, double dt)
             {
                 temp_l_vector += bridge[i - 1].len_vector()/(float)2 + bridge[i].len_vector()/(float)2;
             }
-            moment_sum2 += vector_mul(temp_l_vector, gravity_vector)*(float)bridge[i].get_mass();
+            moment_sum2 += vector_mul(temp_l_vector, gravity_vector)*(float)bridge[i - 1].get_mass();
         }
         //посчитаем момент силы тяжести тела относительно полюса во втором шарнирном креплении в зависимости от его расположения
         sf::Vector3f body_shoulder = sf::Vector3f(0, 0, 0);
