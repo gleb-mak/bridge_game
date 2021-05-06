@@ -21,6 +21,7 @@ public:
 	void SetMoment(double moment);
 	double GetMoment();
 	void ch_is_broken();
+	bool get_is_broken();
 	Balk& operator[](int index);
 private:
 	bool is_broken;

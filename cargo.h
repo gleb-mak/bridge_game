@@ -10,7 +10,10 @@ public:
 	void set_current_balk(int current_balk_);
 	double get_mass();
 	int get_speed();
+	double get_position();
+	void set_position(double position_);
 private:
+	double position;
 	double mass;
 	int speed;
 	int current_balk;

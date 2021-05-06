@@ -30,3 +30,13 @@ int Cargo::get_speed()
 {
 	return speed;
 }
+
+double Cargo::get_position()
+{
+	return position;
+}
+
+void Cargo::set_position(double position_)
+{
+	position = position_;
+}
