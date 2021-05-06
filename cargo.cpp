@@ -26,3 +26,7 @@ double Cargo::get_mass()
 	return mass;
 }
 
+int Cargo::get_speed()
+{
+	return speed;
+}

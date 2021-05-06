@@ -6,6 +6,7 @@
 Chain::Chain()
 {
 	number_of_balks = 0;
+	is_broken = false;
 }
 
 Chain::Chain(Balk* b)
@@ -129,4 +130,9 @@ double Chain::GetMoment()
 Balk& Chain::operator[](int index)
 {
 	return *balks[index];
+}
+
+void Chain::ch_is_broken()
+{
+	is_broken = !is_broken;
 }

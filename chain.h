@@ -20,8 +20,10 @@ public:
 	void Clear();
 	void SetMoment(double moment);
 	double GetMoment();
+	void ch_is_broken();
 	Balk& operator[](int index);
 private:
+	bool is_broken;
 	double inertial_momentum;
 	int number_of_balks;
 	vector<Balk*> balks;
