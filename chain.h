@@ -20,6 +20,7 @@ public:
 	void Clear();
 	void SetMoment(double moment);
 	double GetMoment();
+	Balk& operator[](int index);
 private:
 	double inertial_momentum;
 	int number_of_balks;

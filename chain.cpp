@@ -125,3 +125,8 @@ double Chain::GetMoment()
 {
 	return inertial_momentum;
 }
+
+Balk& Chain::operator[](int index)
+{
+	return *balks[index];
+}
