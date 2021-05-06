@@ -1,5 +1,5 @@
 #include "engine.h"
-#include "solveBridge.cpp"
+#include "solveBridge.h"
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -19,7 +19,7 @@ void Engine::update(double dt)
 			for (auto& chain : chains)
 			{
 				if (chain.is_fixed)
-				solveBridge(chain, body, dt);
+					solveBridge(chain, body, dt);
 			}
 		}
 	}

@@ -1,15 +1,4 @@
-#pragma once
-#include "chain.h"
-#include <cmath>
-#include "cargo.h"
-#define G 0.0005
-#define MAX_FORCE 0.1
-
-Chain left_piece;
-Chain right_piece;
-
-double lp_momentum;
-double rp_momentum;
+#include "solveBridge.h"
 
 //Chain должна облажать 1)Chain -- массив балок
 //у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
@@ -19,6 +8,11 @@ double rp_momentum;
 //у Chain есть метод clear() который очищает массив цепочек
 //у Chain есть свойство double inertial_momentum 
 
+Chain left_piece;
+Chain right_piece;
+
+double lp_momentum;
+double rp_momentum;
 sf::Vector3f vector_mul (sf::Vector3f left, sf::Vector3f right)
 {
     return (sf::Vector3f(left.y*right.z - left.z*right.y, -(left.x*right.z - left.z*right.x), left.x*right.y - left.y*right.x));
