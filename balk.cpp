@@ -299,7 +299,11 @@ void Balk::update_end_fix(sf::Vector2f fix_pos)
 	}
 }
 
-sf::Vector2f Balk::len_vector()
+sf::Vector3f Balk::len_vector()
 {
-	return get_end() - get_begin();
+	sf::Vector3f ans;
+	ans.x = (get_end() - get_begin()).x;
+	ans.y = (get_end() - get_begin()).y;
+	ans.z = 0;
+	return ans;
 }
