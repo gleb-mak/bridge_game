@@ -9,6 +9,7 @@ Cargo::Cargo()
 	texture.loadFromFile("./images/stick.png");
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 50, 50));
+	sprite.setOrigin(50, 50);
     sprite.setPosition({200, 200});	
 }
 
@@ -46,3 +47,9 @@ sf::Sprite Cargo::get_sprite()
 {
 	return sprite;
 }
+
+void Cargo::update_move(sf::Vector2f pos)
+{
+	sprite.setPosition(pos);
+}
+

@@ -32,6 +32,10 @@ void Engine::update(double dt)
 				balk->update_move(mouse_pos);
 				break;
 			}
+			if (body.get_sprite().getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
+			{
+				body.update_move(fasteners[0].get_sprite().getPosition());
+			}
 		}
 		if (is_right_pressed)
 		{
