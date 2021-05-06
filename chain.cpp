@@ -100,3 +100,28 @@ Chain Chain::copy_to_element(Balk* el)
 	}
 	return chain_copy;
 }
+
+void Chain::SetLen(int len)
+{
+	balks.resize(len);
+}
+
+int Chain::GetLen()
+{
+	return balks.capacity();
+}
+
+void Chain::Clear()
+{
+	balks.clear();
+}
+
+void Chain::SetMoment(double moment)
+{
+	inertial_momentum = moment;
+}
+
+double Chain::GetMoment()
+{
+	return inertial_momentum;
+}

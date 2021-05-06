@@ -15,7 +15,13 @@ public:
 	Chain copy();
 	Chain copy_to_element(Balk* element);
 	void delete_end();
+	void SetLen(int len);
+	int GetLen();
+	void Clear();
+	void SetMoment(double moment);
+	double GetMoment();
 private:
+	double inertial_momentum;
 	int number_of_balks;
 	vector<Balk*> balks;
 };
