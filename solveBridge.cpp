@@ -94,8 +94,8 @@ void createSolidChains(Chain bridge, int broken_node) //broken_node [0...n], bri
             j++;
         }
     }
-    left_piece.inertial_momentum = find_inertial_momentum(left_Chain);
-    right_piece.inertial_momentum = find_inertial_momentum(right_Chain);
+    left_piece. SetMoment(find_inertial_momentum(left_piece));
+    right_piece.SetMoment(find_inertial_momentum(right_piece));
 }
 
 
@@ -105,7 +105,7 @@ void solveBridge(Chain bridge, Cargo body, double dt)
     {
         return;
     }
-    if (bridge.is_broken)
+    if (bridge.get_is_broken())
     {
         //render two solid Chains
     }
@@ -133,14 +133,14 @@ void solveBridge(Chain bridge, Cargo body, double dt)
         l_sum +=  (bridge[i].len_vector()/(float)2); // вектор, соединяющий начало и конец моста
 
         sf::Vector3f cargo_vector = sf::Vector3f(0, 0, 0); //вектор, соединяющий начало моста и груз
-        for(i = 0; i < body.GetCurrentBalk(); i++) //body.current_balk \in [0, n];
+        for(i = 0; i < body.get_current_balk(); i++) //body.current_balk \in [0, n];
         {
             cargo_vector += bridge[i].len_vector();
         }
-        sf::Vector3f current_balk_len_vector = bridge[body.GetCurrentBalk()].len_vector();
-        cargo_vector += (current_balk_len_vector * body.position)/bridge[body.GetCurrentBalk()].get_len(); // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
+        sf::Vector3f current_balk_len_vector = bridge[body.get_current_balk()].len_vector();
+        cargo_vector += (current_balk_len_vector * (float)body.get_position())/(float)bridge[body.get_current_balk()].get_len(); // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
 
-        sf::Vector3f cargo_moment1 = vector_mul(cargo_vector, gravity_vector)*body.get_mass(); // момент силы тяжести груза относительно начала моста
+        sf::Vector3f cargo_moment1 = vector_mul(cargo_vector, gravity_vector)*(float)body.get_mass(); // момент силы тяжести груза относительно начала моста
         
         moment_sum1 += cargo_moment1; // теперь данный вектор в теории равен моменту силы реакции последнего крепежа относительно начала моста, помноженного на минус единицу
 
@@ -172,20 +172,20 @@ void solveBridge(Chain bridge, Cargo body, double dt)
         //посчитаем момент силы тяжести тела относительно полюса во втором шарнирном креплении в зависимости от его расположения
         sf::Vector3f body_shoulder = sf::Vector3f(0, 0, 0);
         sf::Vector3f cargo_moment2 = sf::Vector3f(0, 0, 0);
-        if (body.GetCurrentBalk() == 0) //груз слева от полюса
+        if (body.get_current_balk() == 0) //груз слева от полюса
         {
-            body_shoulder = (bridge[0].len_vector() * body.position)/bridge[0].get_len() - bridge[0].len_vector();
+            body_shoulder = (bridge[0].len_vector() * (float)body.get_position())/(float)bridge[0].get_len() - bridge[0].len_vector();
             cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*(float)body.get_mass();
         }
         else //груз справа от полюса
         {
             int j;
-            for (j = 1; j < body.GetCurrentBalk(); j++)
+            for (j = 1; j < body.get_current_balk(); j++)
             {
                 body_shoulder += bridge[j].len_vector();
             }
-            body_shoulder += (bridge[j].len_vector() * body.position)/bridge[j].get_len();  // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
-            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*body.get_mass();
+            body_shoulder += (bridge[j].len_vector() * (float)body.get_position())/(float)bridge[j].get_len();  // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
+            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*(float)body.get_mass();
         }
         moment_sum2 += cargo_moment2; // теперь в теории -1*moment_sum2 равен сумме моментов -1*vector_mul(l_1,N_1) + vector_mul((L-l_1)*N_n+1)
         sf::Vector3f l_1 = bridge[0].len_vector();
@@ -201,7 +201,7 @@ void solveBridge(Chain bridge, Cargo body, double dt)
         {
             if (j == 0)
             {
-                if(body.GetCurrentBalk() != 0)
+                if(body.get_current_balk() != 0)
                 {
                     reactions.push_back(-(float)bridge[0].get_mass()*gravity_vector - reactions[0]); // [N_1, N_2]
                 }
@@ -212,7 +212,7 @@ void solveBridge(Chain bridge, Cargo body, double dt)
             }
             else
             {
-                if (body.GetCurrentBalk() != j)
+                if (body.get_current_balk() != j)
                 {
                     reactions.push_back(reactions[j] - (float)bridge[j].get_mass()*gravity_vector);
                 }
@@ -226,27 +226,27 @@ void solveBridge(Chain bridge, Cargo body, double dt)
         {
             if (find_module(reactions[j]) > MAX_FORCE)
             {
-                bridge.isBroken = true;
+                bridge.ch_is_broken();
                 createSolidChains(bridge, j);
                 return;
             }
         }
         // обсчет поведения тела на мосту, считаем что точка движется бесконечно медленно, то есть ее импульс можно не учитывать при подсчете влияния на мост
-        double pathlen = body.velocity * dt;
-        while (body.position + pathlen > bridge[body.GetCurrentBalk()].get_len())  // путь до конца балки может быть слишком короткой и тело за dt перескакивает на следующую балку
+        double pathlen = body.get_speed()* dt;
+        while (body.get_position() + pathlen > bridge[body.get_current_balk()].get_len())  // путь до конца балки может быть слишком короткой и тело за dt перескакивает на следующую балку
         {
-            pathlen -= bridge[body.GetCurrentBalk()].get_len() - body.position;
-            if (body.GetCurrentBalk() + 1 == bridge.GetLen())
+            pathlen -= bridge[body.get_current_balk()].get_len() - body.get_position();
+            if (body.get_current_balk() + 1 == bridge.GetLen())
             {
                 body.isFinished = true;                                  //тело доехало до конца моста
                 return;
             }
             else
             {
-                body.SetCurrentBalk(body.GetCurrentBalk() + 1);
-                body.position = 0;
+                body.set_current_balk(body.get_current_balk() + 1);
+                body.set_position(0);
             }
         }
-        body.position  = pathlen;
+        body.set_position(pathlen);
     }
 }
