@@ -215,10 +215,3 @@ sf::Vector2f get_global_origin(sf::Vector2f origin, sf::Sprite& sprite)
     j_2.y = cos(alpha);
     return origin.x * j_1 + origin.y * j_2;
 }
-
-
-double P(double m1, double m2, double l1, double l2)
-{
-
-}
-
