@@ -13,6 +13,8 @@ public:
 	double get_position();
 	void set_position(double position_);
 	void update_move(sf::Vector2f pos);
+	void move_right(float dt);
+	bool is_begin;
 	bool is_finished;
 	sf::Sprite get_sprite();
 private:

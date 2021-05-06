@@ -35,7 +35,7 @@ double find_square_module(sf::Vector3f a)
     return (a.x*a.x + a.y*a.y + a.z*a.z);
 }
 
-double find_inertial_momentum(Chain a)
+double find_inertial_momentum(Chain& a)
 {
     double momentum = 0;
     sf::Vector3f l_sum = sf::Vector3f(0, 0, 0);
@@ -55,7 +55,7 @@ double find_inertial_momentum(Chain a)
     return momentum;
 }
 
-void createSolidChains(Chain bridge, int broken_node) //broken_node [0...n], bridge[0...n-1] bridge_len [0...n]
+void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], bridge[0...n-1] bridge_len [0...n]
 {
     left_piece.Clear();
     right_piece.Clear();
@@ -99,7 +99,7 @@ void createSolidChains(Chain bridge, int broken_node) //broken_node [0...n], bri
 }
 
 
-void solveBridge(Chain bridge, Cargo body, double dt)
+void solveBridge(Chain& bridge, Cargo& body, double dt)
 {
     if (body.is_finished)
     {

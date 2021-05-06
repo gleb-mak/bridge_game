@@ -7,6 +7,7 @@ Chain::Chain()
 {
 	number_of_balks = 0;
 	is_broken = false;
+	is_fixed = false;
 }
 
 Chain::Chain(Balk* b)

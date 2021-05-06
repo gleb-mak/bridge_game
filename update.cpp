@@ -1,4 +1,6 @@
 #include "engine.h"
+#include "solveBridge.cpp"
+#include <vector>
 #include <iostream>
 #include <algorithm>
 
@@ -12,6 +14,14 @@ void Engine::update(double dt)
 	if (is_gravity)
 	{
 		g_time += dt;
+		if (body.is_begin)
+		{
+			for (auto& chain : chains)
+			{
+				if (chain.is_fixed)
+				solveBridge(chain, body, dt);
+			}
+		}
 	}
 	list<Balk>::iterator balk = balks.begin();
 	while (balk != balks.end())
@@ -34,6 +44,7 @@ void Engine::update(double dt)
 			}
 			if (body.get_sprite().getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 			{
+				body.is_begin = true;
 				body.update_move(fasteners[0].get_sprite().getPosition());
 			}
 		}
@@ -83,6 +94,13 @@ void Engine::update(double dt)
 			balk->is_end_fixed = true;
 			fasteners[1].ch_color("green");
 			balk->update_end_fix(fasteners[1].get_sprite().getPosition());
+			for (auto& chain : chains)
+			{
+				if (find(chain.get_balks().begin(), chain.get_balks().end(), &(*balk)) != chain.get_balks().end() && !chain.is_fixed)
+				{
+					chain.is_fixed = true;
+				}
+			}
 		}
 		if (!balk->is_child && !balk->is_fixed)
 		{
@@ -137,6 +155,8 @@ void Engine::update(double dt)
 	}
 	for (auto& chain : chains)
 	{
+		if (chain.is_fixed)
+			continue;
 		if (is_gravity)
 		{
 			chain.update_gravity(dt, g_time);

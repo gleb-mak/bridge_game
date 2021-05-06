@@ -23,6 +23,7 @@ public:
 	void ch_is_broken();
 	bool get_is_broken();
 	Balk& operator[](int index);
+	bool is_fixed;
 private:
 	bool is_broken;
 	double inertial_momentum;
