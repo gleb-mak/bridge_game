@@ -5,6 +5,7 @@ Cargo::Cargo()
 	mass = 10.0;
 	speed = 1;
 	current_balk = -1;
+	is_finished = false;
 	texture.loadFromFile("./images/stick.png");
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 50, 50));

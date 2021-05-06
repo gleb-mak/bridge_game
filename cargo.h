@@ -12,6 +12,7 @@ public:
 	int get_speed();
 	double get_position();
 	void set_position(double position_);
+	bool is_finished;
 private:
 	double position;
 	double mass;
