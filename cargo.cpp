@@ -11,12 +11,22 @@ Cargo::Cargo()
     sprite.setPosition({200, 200});	
 }
 
-int Cargo::GetCurrentBalk()
+int Cargo::get_current_balk()
 {
 	return current_balk;
 }
 
-void Cargo::SetCurrentBalk(int current_balk_)
+void Cargo::set_current_balk(int current_balk_)
 {
 	current_balk = current_balk_;
+}
+
+double Cargo::get_mass()
+{
+	return mass;
+}
+
+int Cargo::get_speed()
+{
+	return speed;
 }

@@ -6,8 +6,10 @@ class Cargo
 {
 public:
 	Cargo();
-	int GetCurrentBalk();
-	void SetCurrentBalk(int current_balk_);
+	int get_current_balk();
+	void set_current_balk(int current_balk_);
+	double get_mass();
+	int get_speed();
 private:
 	double mass;
 	int speed;
