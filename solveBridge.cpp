@@ -101,7 +101,7 @@ void createSolidChains(Chain bridge, int broken_node) //broken_node [0...n], bri
 
 void solveBridge(Chain bridge, Cargo body, double dt)
 {
-    if (body.isFinished)
+    if (body.is_finished)
     {
         return;
     }
@@ -238,7 +238,7 @@ void solveBridge(Chain bridge, Cargo body, double dt)
             pathlen -= bridge[body.get_current_balk()].get_len() - body.get_position();
             if (body.get_current_balk() + 1 == bridge.GetLen())
             {
-                body.isFinished = true;                                  //тело доехало до конца моста
+                body.is_finished = true;                                  //тело доехало до конца моста
                 return;
             }
             else

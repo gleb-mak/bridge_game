@@ -13,6 +13,7 @@ public:
 	double get_position();
 	void set_position(double position_);
 	bool is_finished;
+	sf::Sprite get_sprite();
 private:
 	double position;
 	double mass;

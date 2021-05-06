@@ -41,3 +41,8 @@ void Cargo::set_position(double position_)
 {
 	position = position_;
 }
+
+sf::Sprite Cargo::get_sprite()
+{
+	return sprite;
+}

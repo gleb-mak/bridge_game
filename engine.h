@@ -2,6 +2,7 @@
 #include "balk.h"
 #include "fastener.h"
 #include "chain.h"
+#include "cargo.h"
 #include <SFML/Graphics.hpp>
 #include <list>
 #include <vector>
@@ -36,6 +37,7 @@ private:
 	sf::Font font;
 	list<Balk> balks;
 	list<Chain> chains;
+	Cargo body;
 	vector<Fastener> fasteners;
 	// void draw_balk(Balk& balk);
 };

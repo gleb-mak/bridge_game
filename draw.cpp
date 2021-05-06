@@ -15,6 +15,7 @@ void Engine::draw()
 		window.draw(fastener.get_sprite());
 	}
 	window.draw(text);
+	window.draw(body.get_sprite());
 	window.display();
 }
 
