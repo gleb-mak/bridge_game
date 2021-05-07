@@ -1,8 +1,8 @@
 #include "chain.h"
 #include <cmath>
 #include "cargo.h"
-#define G 0.0005
-#define MAX_FORCE 0.1
+#define G 10
+#define MAX_FORCE 12
 
 sf::Vector3f vector_mul (sf::Vector3f left, sf::Vector3f right);
 double find_module(sf::Vector3f a);

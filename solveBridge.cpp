@@ -1,4 +1,5 @@
 #include "solveBridge.h"
+#define EPS 0.0001
 
 //Chain должна облажать 1)Chain -- массив балок
 //у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
@@ -57,17 +58,19 @@ void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], br
     if (broken_node == 0)
     {
         left_piece.SetLen(0);
-        right_piece.SetLen(bridge.GetLen());
-        for (int i = 0; i < bridge.GetLen(); i++)
+				int len = bridge.GetLen();
+        right_piece.SetLen(len);
+        for (int i = 0; i < len; i++)
         {
-            right_piece[i] = bridge[bridge.GetLen() - 1 - i];
+            right_piece[i] = bridge[len - 1 - i];
         }
     }
     else if (broken_node == bridge.GetLen())
     {
+				int len = bridge.GetLen();
         right_piece.SetLen(0);
-        left_piece.SetLen(bridge.GetLen());
-        for (int i = 0; i < bridge.GetLen(); i++)
+        left_piece.SetLen(len);
+        for (int i = 0; i < len; i++)
         {
             left_piece[i] = bridge[i];
         }
@@ -146,76 +149,81 @@ void solveBridge(Chain& bridge, Cargo& body, double dt)
             total_mass += bridge[i].get_mass();
         }
         float N_begin_y =-1*total_mass*G -N_end_y; //Игрек координата силы реакции самого первого крепежа; по второму закону Ньютона в проекции на ось y, N_end_y + N_begin_y = -Mg, где M - сумма масс балок
-
-        //посчитаем момент всех сил тяжести системы отсносительно второго от начала моста шарнирного крепления кроме момента груза:
-        sf::Vector3f moment_sum2 = sf::Vector3f(0, 0, 0);
-        sf::Vector3f temp_l_vector = sf::Vector3f(0, 0, 0); //вектор отсчитывающий расстояние до iой балки
-        moment_sum2 -= vector_mul(bridge[0].len_vector()/(float)2, gravity_vector)*(float)bridge[0].get_mass(); // первая балка теперь слева от полюса, поэтому знак минус
-        for (i = 1; i < bridge.GetLen(); i++)
-        {
-            if (i == 1)
-            {
-                temp_l_vector += bridge[i].len_vector()/(float)2;
-            }
-            else
-            {
-                temp_l_vector += bridge[i - 1].len_vector()/(float)2 + bridge[i].len_vector()/(float)2;
-            }
-            moment_sum2 += vector_mul(temp_l_vector, gravity_vector)*(float)bridge[i - 1].get_mass();
-        }
-        //посчитаем момент силы тяжести тела относительно полюса во втором шарнирном креплении в зависимости от его расположения
-        sf::Vector3f body_shoulder = sf::Vector3f(0, 0, 0);
-        sf::Vector3f cargo_moment2 = sf::Vector3f(0, 0, 0);
-        if (body.get_current_balk() == 0) //груз слева от полюса
-        {
-            body_shoulder = (bridge[0].len_vector() * (float)body.get_position())/(float)bridge[0].get_len() - bridge[0].len_vector();
-            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*(float)body.get_mass();
-        }
-        else //груз справа от полюса
-        {
-            int j;
-            for (j = 1; j < body.get_current_balk(); j++)
-            {
-                body_shoulder += bridge[j].len_vector();
-            }
-            body_shoulder += (bridge[j].len_vector() * (float)body.get_position())/(float)bridge[j].get_len();  // в данной строчке нормируется вектор балки на котором находится груз и пропорционально вычисляется вектор до груза
-            cargo_moment2 = vector_mul(body_shoulder, gravity_vector)*(float)body.get_mass();
-        }
-        moment_sum2 += cargo_moment2; // теперь в теории -1*moment_sum2 равен сумме моментов -1*vector_mul(l_1,N_1) + vector_mul((L-l_1)*N_n+1)
-        sf::Vector3f l_1 = bridge[0].len_vector();
-        sf::Vector3f L_l_1 = l_sum -l_1; //L_l_1 = L - l_1
-
-        float N_begin_x = (l_1.x*N_begin_y - moment_sum2.z - L_l_1.x*N_end_y)/(l_1.y+L_l_1.y); //Икс координата силы реакции самого первого крепежа
-        float N_end_x = -N_begin_x; //Икс координата силы реакции последнего крепежа по второму закону Ньютона в проекции на ось икс
-
-        sf::Vector3f N_beg_vect = sf::Vector3f(N_begin_x, N_begin_y, 0); 
-        // по второму закону Ньютона посчитаем весь массив векторов N от 0 до n
-        reactions.push_back(N_beg_vect);
+				
+				std::vector<float> n_y_coords;
+				n_y_coords.push_back(N_begin_y);
+        //вычисляю все игрек компоненты векторов N
         for (int j = 0; j < bridge.GetLen(); j++)
-        {
-            if (j == 0)
-            {
-                if(body.get_current_balk() != 0)
-                {
-                    reactions.push_back(-(float)bridge[0].get_mass()*gravity_vector - reactions[0]); // [N_1, N_2]
-                }
-                else
-                {
-                    reactions.push_back(-(float)bridge[0].get_mass()*gravity_vector - reactions[0] - (float)body.get_mass()*gravity_vector);
-                }
-            }
-            else
-            {
-                if (body.get_current_balk() != j)
-                {
-                    reactions.push_back(reactions[j] - (float)bridge[j].get_mass()*gravity_vector);
-                }
-                else
-                {
-                    reactions.push_back(reactions[j] - (float)bridge[j].get_mass()*gravity_vector - (float)body.get_mass()*gravity_vector);
-                }
-            }
-        }
+        {   
+             if (j == 0)
+             {   
+                 if(body.get_current_balk() != 0)
+                 {   
+                     n_y_coords.push_back((float)bridge[0].get_mass()*G - n_y_coords[0]); // [N_1, N_2]
+                 }
+                 else
+                 {   
+                     n_y_coords.push_back((float)bridge[0].get_mass()*G - n_y_coords[0] + (float)body.get_mass()*G);
+                 }
+             }
+             else
+             {   
+                 if (body.get_current_balk() != j)
+                 {
+                     n_y_coords.push_back(n_y_coords[j] + (float)bridge[j].get_mass()*G);
+                 }
+                 else
+                 {
+                     n_y_coords.push_back(n_y_coords[j] + (float)bridge[j].get_mass()*G + (float)body.get_mass()*G);
+                 }
+             }
+         }
+
+				bool is_found = false;
+				float N_k_x;
+				int index;
+				//ищу первую балку под ненулевым углом чтобы применить правило моментов для нее, если такой балки нет то считается что реактивные силы по краям моста вертикальны
+				for (int k = 0; k < bridge.GetLen() && !is_found; k++)
+				{
+					sf::Vector3f l = bridge[k].len_vector();
+					if (!is_found && (l.y < -EPS || EPS < l.y))
+					{
+						is_found = true;
+						if (body.get_current_balk() != k)
+						{
+							N_k_x = (l.x*G*bridge[k].get_mass()/2 + l.x*n_y_coords[k])/l.y;
+						}
+						else
+						{
+							N_k_x = (l.x * n_y_coords[k] - 0.5*l.x*bridge[k].get_mass() - ((find_module(l) - body.get_position())*l.x*G*body.get_mass())/find_module(l))/l.y;
+						}
+						index = k;
+					}
+				}
+				if (!is_found)
+				{
+				 	N_k_x = 0;
+					index = 0;
+					is_found = true;
+				}
+        // по второму закону Ньютона посчитаем весь массив векторов N от 0 до n
+        //TODO: зная k-ую иксовую координату силы и все игрек координаты всех сил посчитать вектора сил реакции:
+				std::vector<float> n_x_coords;
+				n_x_coords.resize(bridge.GetLen() + 1);
+				n_x_coords[index] = N_k_x; 
+				for (int k = index + 1; k < n_x_coords.size(); k++)
+				{
+					n_x_coords[k] = -n_x_coords[k-1];
+				}
+				for (int k = index - 1; k > 0; k--)
+				{
+					n_x_coords[k] = n_x_coords[k + 1];
+				}
+				for (int k = 0; k < bridge.GetLen() + 1; k++)
+				{
+					reactions.push_back(sf::Vector3f(n_x_coords[k], n_y_coords[k], 0));
+				}
+
         for (int j = 0; j < reactions.size(); j++) //если какая-то из сил реакции больше критической то цепь рвется в крепеже
         {
             if (find_module(reactions[j]) > MAX_FORCE)

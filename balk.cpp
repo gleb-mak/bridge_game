@@ -303,7 +303,7 @@ sf::Vector3f Balk::len_vector()
 {
 	sf::Vector3f ans;
 	ans.x = (get_end() - get_begin()).x;
-	ans.y = (get_end() - get_begin()).y;
+	ans.y = -(get_end() - get_begin()).y;
 	ans.z = 0;
 	return ans;
 }
