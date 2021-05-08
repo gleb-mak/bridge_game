@@ -1,5 +1,5 @@
 #include "solveBridge.h"
-#define EPS 0.0001
+#define EPS 1
 
 //Chain должна облажать 1)Chain -- массив балок
 //у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
@@ -25,7 +25,7 @@ double scalar_product (sf::Vector3f a, sf::Vector3f b)
 	return a.x*b.x + a.y*b.y + a.z*b.z;
 }
 
-void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces)
+void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow>& arrows)
 {
 	int len = bridge.GetLen();
 	float max = 0;
@@ -41,15 +41,23 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces)
 			max_index = i;
 		}
 	}
-
-	for (int i = 0; i < len; i++)
+	int i = 0;
+	for (auto& arrow : arrows)
 	{
+		if (i == len)
+		{
+		 	sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0); 
+  		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
+  		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
+  		arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 0);
+			break;
+		}
 		sf::Vector2f place = bridge[i].get_begin();
 		sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0);
 		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
 		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-		Arrow new_arrow = Arrow();
-		new_arrow.initialize(place.x, place.y, angle, 1);
+		arrow.initialize(place.x + 5, place.y + 5, angle, 1);
+		i++;
 	}
 }
 
@@ -154,7 +162,7 @@ void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], br
 }
 
 
-void solveBridge(Chain& bridge, Cargo& body, double dt)
+void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows)
 {
     if (body.is_finished)
     {
@@ -280,7 +288,7 @@ void solveBridge(Chain& bridge, Cargo& body, double dt)
 				{
 					reactions.push_back(sf::Vector3f(n_x_coords[k], n_y_coords[k], 0));
 				}
-
+				draw_forces(bridge, reactions, arrows);
         for (int j = 0; j < reactions.size(); j++) //если какая-то из сил реакции больше критической то цепь рвется в крепеже
         {
             if (find_module(reactions[j]) > MAX_FORCE)

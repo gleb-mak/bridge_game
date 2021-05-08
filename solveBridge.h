@@ -1,4 +1,5 @@
 #include <cmath>
+#include <list>
 #include "cargo.h"
 #include "chain.h"
 #include "arrow.h"
@@ -10,4 +11,4 @@ double find_module(sf::Vector3f a);
 double find_square_module(sf::Vector3f a);
 double find_inertial_momentum(Chain& a);
 void createSolidChains(Chain& bridge, int broken_node);
-void solveBridge(Chain& bridge, Cargo& body, double dt);
+void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows);

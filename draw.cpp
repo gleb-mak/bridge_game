@@ -17,7 +17,9 @@ void Engine::draw()
 	for (auto& arrow : arrows)
 	{
 		if (arrow.is_valid)
+		{
 			window.draw(arrow.get_sprite());
+		}
 	}
 	window.draw(text);
 	window.draw(body.get_sprite());

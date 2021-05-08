@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include "balk.h"
+#include "arrow.h"
+#include <list>
 
 class Chain
 {
