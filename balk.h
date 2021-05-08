@@ -36,6 +36,7 @@ public:
 	bool is_in_fixed_chain;
 	int child_number;
 	vector<Fastener> fasteners;
+	sf::Vector2f get_begin();
 	double get_mass();
 	double get_len();
 	double get_omega();
@@ -53,7 +54,6 @@ private:
 	Balk* parent;
 	sf::Sprite sprite;
 	void ch_origin(sf::Vector2f new_origin);
-	sf::Vector2f get_begin();
 	void setPosition_(sf::Vector2f new_position);
 	void setRotation_(float angle);
 	static double movement_ODE(double t, double angle, double c, double len, double mass);

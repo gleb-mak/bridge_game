@@ -1,4 +1,5 @@
 #pragma once
+#include "arrow.h"
 #include "balk.h"
 #include "fastener.h"
 #include "chain.h"
@@ -23,6 +24,7 @@ private:
 	void input();
 	void draw();
 	void add_balk();
+	void add_arrow();
 	void add_chain(Balk* b);
 	bool is_left_pressed;
 	bool is_right_pressed;
@@ -37,6 +39,7 @@ private:
 	sf::Font font;
 	list<Balk> balks;
 	list<Chain> chains;
+	list<Arrow> arrows;
 	Cargo body;
 	vector<Fastener> fasteners;
 	// void draw_balk(Balk& balk);

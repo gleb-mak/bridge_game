@@ -50,6 +50,11 @@ void Engine::add_balk()
 	balks.resize(balks.size() + 1);
 }
 
+void Engine::add_arrow()
+{
+	arrows.resize(arrows.size() + 1);
+}
+
 void Engine::add_chain(Balk* b)
 {
 	chains.push_back(b);

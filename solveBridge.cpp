@@ -14,7 +14,46 @@ Chain right_piece;
 
 double lp_momentum;
 double rp_momentum;
-sf::Vector3f vector_mul (sf::Vector3f left, sf::Vector3f right)
+
+sf::Vector3f normalize_vector(sf::Vector3f v)
+{
+	return v/(float)find_module(v);
+}
+
+double scalar_product (sf::Vector3f a, sf::Vector3f b)
+{
+	return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces)
+{
+	int len = bridge.GetLen();
+	float max = 0;
+	int max_index;
+	std::vector<float> modules;
+	for (int i = 0; i < forces.size(); i++)
+	{
+		float temp_mod = find_module(forces[i]);
+		modules.push_back(temp_mod);
+		if (temp_mod > max)
+		{
+			max = temp_mod;
+			max_index = i;
+		}
+	}
+
+	for (int i = 0; i < len; i++)
+	{
+		sf::Vector2f place = bridge[i].get_begin();
+		sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0);
+		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
+		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
+		Arrow new_arrow = Arrow();
+		new_arrow.initialize(place.x, place.y, angle, 1);
+	}
+}
+
+sf::Vector3f vector_mul(sf::Vector3f left, sf::Vector3f right)
 {
     return (sf::Vector3f(left.y*right.z - left.z*right.y, -(left.x*right.z - left.z*right.x), left.x*right.y - left.y*right.x));
 }
