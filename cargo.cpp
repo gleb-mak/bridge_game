@@ -3,7 +3,7 @@
 Cargo::Cargo()
 {
 	mass = 10.0;
-	speed = 1;
+	speed = 0.2;
 	current_balk = -1;
 	is_initialized = false;
 	is_begin = false;
@@ -30,7 +30,7 @@ double Cargo::get_mass()
 	return mass;
 }
 
-int Cargo::get_speed()
+float Cargo::get_speed()
 {
 	return speed;
 }

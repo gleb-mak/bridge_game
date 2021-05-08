@@ -20,6 +20,7 @@ void Engine::update(double dt)
 			{
 				body.is_initialized = true;
 				body.set_current_balk(0);
+				body.set_position(0);
 			}
 			for (auto& chain : chains)
 			{
@@ -51,6 +52,8 @@ void Engine::update(double dt)
 			if (body.get_sprite().getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 			{
 				body.is_begin = true;
+				body.is_initialized = false;
+				body.is_finished = false;
 				body.update_move(fasteners[0].get_sprite().getPosition());
 			}
 		}

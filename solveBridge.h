@@ -2,7 +2,7 @@
 #include <cmath>
 #include "cargo.h"
 #define G 10
-#define MAX_FORCE 12
+#define MAX_FORCE 120
 
 sf::Vector3f vector_mul (sf::Vector3f left, sf::Vector3f right);
 double find_module(sf::Vector3f a);

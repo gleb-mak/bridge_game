@@ -9,7 +9,7 @@ public:
 	int get_current_balk();
 	void set_current_balk(int current_balk_);
 	double get_mass();
-	int get_speed();
+	float get_speed();
 	double get_position();
 	void set_position(double position_);
 	void update_move(sf::Vector2f pos);
@@ -21,7 +21,7 @@ public:
 private:
 	double position;
 	double mass;
-	int speed;
+	float speed;
 	int current_balk;
 	sf::Texture texture;
     sf::Sprite sprite;	

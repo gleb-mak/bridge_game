@@ -24,6 +24,7 @@ public:
 	bool get_is_broken();
 	Balk& operator[](int index);
 	bool is_fixed;
+	sf::Vector3f mass_center;
 private:
 	bool is_broken;
 	double inertial_momentum;

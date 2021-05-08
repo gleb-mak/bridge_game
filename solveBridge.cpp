@@ -30,6 +30,28 @@ double find_square_module(sf::Vector3f a)
     return (a.x*a.x + a.y*a.y + a.z*a.z);
 }
 
+void find_mass_center(Chain& a, int chain_type) //chain_type = 0 --> left chain, chain_type = 1 --> right_chain
+{
+	double  total_mass = 0;
+	for (int i = 0; i < a.GetLen(); i++)
+	{
+		total_mass += a[i].get_mass();
+	}	
+	sf::Vector3f m_r = sf::Vector3f(0, 0, 0);
+	for (int i = 0; i < a.GetLen(); i++)
+	{
+		m_r += (float)a[i].get_mass() * a[i].len_vector();
+	}
+	if (chain_type == 0)
+	{
+		a.mass_center = m_r/(float)total_mass;
+	}
+	else
+	{
+		a.mass_center = ((float)-1)*m_r/(float)total_mass;
+	}
+}
+
 double find_inertial_momentum(Chain& a)
 {
     double momentum = 0;
@@ -54,45 +76,42 @@ void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], br
 {
     left_piece.Clear();
     right_piece.Clear();
-
-    if (broken_node == 0)
+		left_piece.SetLen(0);	
+		right_piece.SetLen(0);	
+    
+		if (broken_node == 0)
     {
-        left_piece.SetLen(0);
 				int len = bridge.GetLen();
-        right_piece.SetLen(len);
         for (int i = 0; i < len; i++)
         {
-            right_piece[i] = bridge[len - 1 - i];
+						bridge[len - 1 - i];
+            right_piece.add_balk(&bridge[len - 1 - i]);
         }
     }
     else if (broken_node == bridge.GetLen())
     {
 				int len = bridge.GetLen();
-        right_piece.SetLen(0);
-        left_piece.SetLen(len);
         for (int i = 0; i < len; i++)
         {
-            left_piece[i] = bridge[i];
+            left_piece.add_balk(&bridge[i]);
         }
     }
     else
     {   
-        left_piece.SetLen(broken_node);
-        right_piece.SetLen(bridge.GetLen() - broken_node);
         int k;
         for (k = 0; k < broken_node; k++)
         {
-            left_piece[k] = bridge[k];
+            left_piece.add_balk(&bridge[k]);
         }
-        int j = 0;
         for (int i = bridge.GetLen() -1; i >= k; i--)
         {
-            right_piece[j] = bridge[i];
-            j++;
+            right_piece.add_balk(&bridge[i]);
         }
     }
     left_piece. SetMoment(find_inertial_momentum(left_piece));
     right_piece.SetMoment(find_inertial_momentum(right_piece));
+		find_mass_center(left_piece, 0);
+		find_mass_center(right_piece, 1);
 }
 
 
@@ -207,7 +226,6 @@ void solveBridge(Chain& bridge, Cargo& body, double dt)
 					is_found = true;
 				}
         // по второму закону Ньютона посчитаем весь массив векторов N от 0 до n
-        //TODO: зная k-ую иксовую координату силы и все игрек координаты всех сил посчитать вектора сил реакции:
 				std::vector<float> n_x_coords;
 				n_x_coords.resize(bridge.GetLen() + 1);
 				n_x_coords[index] = N_k_x; 
@@ -234,21 +252,33 @@ void solveBridge(Chain& bridge, Cargo& body, double dt)
             }
         }
         // обсчет поведения тела на мосту, считаем что точка движется бесконечно медленно, то есть ее импульс можно не учитывать при подсчете влияния на мост
-        double pathlen = body.get_speed()* dt;
-        while (body.get_position() + pathlen > bridge[body.get_current_balk()].get_len())  // путь до конца балки может быть слишком короткой и тело за dt перескакивает на следующую балку
+        double pathlen = body.get_speed()*dt;
+				while (body.get_position() + pathlen > bridge[body.get_current_balk()].get_len())  // путь до конца балки может быть слишком короткой и тело за dt перескакивает на следующую балку
         {
-            pathlen -= bridge[body.get_current_balk()].get_len() - body.get_position();
+            pathlen -= (bridge[body.get_current_balk()].get_len() - body.get_position());
             if (body.get_current_balk() + 1 == bridge.GetLen())
             {
                 body.is_finished = true;                                  //тело доехало до конца моста
-                return;
+                printf("It's gone!\n");
+								body.update_move(sf::Vector2f(200, 200));
+								return;
             }
             else
             {
-                body.set_current_balk(body.get_current_balk() + 1);
+                int old_balk = body.get_current_balk();
+								body.set_current_balk(old_balk + 1);
+								sf::Vector3f curr_pos_vec = bridge[old_balk].len_vector()*(float)((bridge[old_balk].get_len() - body.get_position())/bridge[old_balk].get_len());
+								sf::Vector2f new_coords = sf::Vector2f((body.get_sprite().getPosition()).x + curr_pos_vec.x,(body.get_sprite().getPosition()).y - curr_pos_vec.y); 
+								body.update_move(new_coords);
                 body.set_position(0);
+
             }
         }
-        body.set_position(pathlen);
+        float old_pos = body.get_position();
+				body.set_position(old_pos + pathlen);
+				sf::Vector3f curr_len = bridge[body.get_current_balk()].len_vector();
+				sf::Vector3f curr_pos_vec = (curr_len*(float)pathlen)/(float)find_module(curr_len);
+				sf::Vector2f new_coords = sf::Vector2f((body.get_sprite().getPosition()).x + curr_pos_vec.x,(body.get_sprite().getPosition()).y - curr_pos_vec.y); 
+				body.update_move(new_coords);
     }
 }
