@@ -16,8 +16,13 @@ double vectors_multiply(sf::Vector2f v1, sf::Vector2f v2);
 double vector_abs(sf::Vector2f v);
 
 double angle_2_vectors(sf::Vector2f v1, sf::Vector2f v2);
-
+double Runge_Kutta2(Chain& chain, double G);
 sf::Vector2f global_to_local(sf::Vector2f v_global, float alpha);
 
 sf::Vector2f get_global_origin(sf::Vector2f origin, sf::Sprite& sprite);
+sf::Vector3f normalize_vector(sf::Vector3f v);
 
+double scalar_product (sf::Vector3f a, sf::Vector3f b);
+sf::Vector3f vector_mul(sf::Vector3f left, sf::Vector3f right);
+double find_module(sf::Vector3f a);
+double find_square_module(sf::Vector3f a);

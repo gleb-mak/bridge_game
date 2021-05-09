@@ -32,6 +32,16 @@ void Chain::add_balk(Balk* b)
 	number_of_balks++;
 }
 
+double Chain::get_mass()
+{
+	double mass = 0;
+	for (auto& balk : balks)
+	{
+		mass += balk->get_mass();
+	}
+	return mass;
+}
+
 void Chain::update_gravity(double dt, double t)
 {
 	rotate_all(0.1);

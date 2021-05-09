@@ -1,6 +1,9 @@
 #include "solveBridge.h"
+#include "Runge.h"
 #define EPS 10
 #define PI 3.14159265
+#define G 10
+#define fake_g 0.001
 
 //Chain должна облажать 1)Chain -- массив балок
 //у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
@@ -12,19 +15,6 @@
 
 Chain left_piece;
 Chain right_piece;
-
-double lp_momentum;
-double rp_momentum;
-
-sf::Vector3f normalize_vector(sf::Vector3f v)
-{
-	return v/(float)find_module(v);
-}
-
-double scalar_product (sf::Vector3f a, sf::Vector3f b)
-{
-	return a.x*b.x + a.y*b.y + a.z*b.z;
-}
 
 void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow>& arrows)
 {
@@ -69,22 +59,6 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 	}
 }
 
-sf::Vector3f vector_mul(sf::Vector3f left, sf::Vector3f right)
-{
-    return (sf::Vector3f(left.y*right.z - left.z*right.y, -(left.x*right.z - left.z*right.x), left.x*right.y - left.y*right.x));
-}
-
-double find_module(sf::Vector3f a)
-{
-    return sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
-}
-
-
-double find_square_module(sf::Vector3f a)
-{
-    return (a.x*a.x + a.y*a.y + a.z*a.z);
-}
-
 void find_mass_center(Chain& a, int chain_type) //chain_type = 0 --> left chain, chain_type = 1 --> right_chain
 {
 	double  total_mass = 0;
@@ -105,6 +79,7 @@ void find_mass_center(Chain& a, int chain_type) //chain_type = 0 --> left chain,
 	{
 		a.mass_center = ((float)-1)*m_r/(float)total_mass;
 	}
+	a.mass_center = sf::Vector3f(a.mass_center.x, -a.mass_center.y, a.mass_center.z);
 }
 
 double find_inertial_momentum(Chain& a)
@@ -126,6 +101,7 @@ double find_inertial_momentum(Chain& a)
     }
     return momentum;
 }
+
 
 void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], bridge[0...n-1] bridge_len [0...n]
 {
@@ -168,8 +144,8 @@ void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], br
 		find_mass_center(left_piece, 0);
 		find_mass_center(right_piece, 1);
 }
-
-
+// Ia' = ---
+//a = b'
 void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows)
 {
     if (body.is_finished)
@@ -178,7 +154,9 @@ void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows
     }
     if (bridge.get_is_broken())
     {
-        //render two solid Chains
+			double new_angle = Runge_Kutta(
+			//left_piece.rotate_all();
+			//right_piece.rotate_all();
     }
     else
     {   

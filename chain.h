@@ -12,6 +12,7 @@ public:
 	void initialize(int n, vector<Balk*>& b);
 	void add_balk(Balk* b);
 	void update_gravity(double dt, double t);
+	void rotate_all(float angle);
 	vector<Balk*>& get_balks();
 	int size();
 	Chain copy();
@@ -27,6 +28,7 @@ public:
 	Balk& operator[](int index);
 	bool is_fixed;
 	sf::Vector3f mass_center;
+	double get_mass();
 private:
 	bool is_broken;
 	double inertial_momentum;

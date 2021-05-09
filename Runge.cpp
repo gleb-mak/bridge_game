@@ -1,11 +1,35 @@
 #include "Runge.h"
+#include "chain.h"
 #include <cmath>
 #include <functional>
 #include <iostream>
 #define REZIST_MOMENTUM 0.001
 
 using namespace std::placeholders;
+sf::Vector3f vector_mul(sf::Vector3f left, sf::Vector3f right)
+{
+    return (sf::Vector3f(left.y*right.z - left.z*right.y, -(left.x*right.z - left.z*right.x), left.x*right.y - left.y*right.x));
+}
 
+sf::Vector3f normalize_vector(sf::Vector3f v)
+{
+  return v/(float)find_module(v);
+}
+
+double scalar_product (sf::Vector3f a, sf::Vector3f b)
+{
+  return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+double find_module(sf::Vector3f a)
+{
+    return sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+}
+
+double find_square_module(sf::Vector3f a)
+{
+    return (a.x*a.x + a.y*a.y + a.z*a.z);
+}
 
 double f(double x, double y, double z, double m, double g, double l)
 {
@@ -66,6 +90,11 @@ double f4(double p1, double p2, double y1, double y2, double l1, double l2, doub
 {
 	return (2*sin(y1-y2)*(p1*p1*l1*(m1+m2)+g*(m1+m2)*cos(y1)+p2*p2*l2*m2*cos(y1-y2))) / (l2*(2*m1+m2-m2*cos(2*y1-2*y2)));
 }
+//I * a'' = r_c *MG + M_tr
+double integrate_chain(Chain& chain, double G)
+{
+	return -((vector_mul(chain.mass_center, (float)chain.get_mass()*sf::Vector3f(0, -(float)G, 0)).z + REZIST_MOMENTUM)/chain.GetMoment());
+}
 
 double Runge_Kutta(double Yo, double Xo, double& Zo, double dt, double m, double G, double l)
 {
@@ -98,6 +127,39 @@ double Runge_Kutta(double Yo, double Xo, double& Zo, double dt, double m, double
 	}
 	return Y1;
 }
+
+double Runge_Kutta2(Chain& chain, double gravity, double dt)
+{
+  double Y1, Z1; 
+  double k1, k2, k4, k3;
+  double q1, q2, q4, q3;
+  int n = 5; 
+  double h = dt / n;
+  auto f1 = std::bind(integrate_chain, _1, _2);
+  for (int i = 0; i < n; ++i)
+  { 
+    k1 = h * f1(chain, gravity);
+    q1 = h * g(Xo, Yo, Zo);
+
+    k2 = h * f1(Xo + h/2.0, Yo + q1/2.0, Zo + k1/2.0);
+    q2 = h * g(Xo + h/2.0, Yo + q1/2.0, Zo + k1/2.0);
+
+    k3 = h * f1(Xo + h/2.0, Yo + q2/2.0, Zo + k2/2.0);
+    q3 = h * g(Xo + h/2.0, Yo + q2/2.0, Zo + k2/2.0);
+
+    k4 = h * f1(Xo + h, Yo + q3, Zo + k3);
+    q4 = h * g(Xo + h, Yo + q3, Zo + k3);
+
+    Z1 = Zo + (k1 + 2.0*k2 + 2.0*k3 + k4)/6.0;
+    Y1 = Yo + (q1 + 2.0*q2 + 2.0*q3 + q4)/6.0;
+
+    Yo = Y1;
+    Zo = Z1;
+    Xo += h;
+  }
+  return Y1;
+}
+
 
 void Runge_Kutta_2nd_Order( double (*f)(double, double, double, double, double), double x0,
                         double y[], double& c, double dt, int number_of_steps, double len, double mass ) {
