@@ -15,6 +15,7 @@ Chain::Chain(Balk* b)
 	balks.push_back(b);
 	number_of_balks = 1;
 	is_broken = false;
+	is_fixed = false;
 }
 
 void Chain::initialize(int n, vector<Balk*>& b)
@@ -22,6 +23,7 @@ void Chain::initialize(int n, vector<Balk*>& b)
 	number_of_balks = n;
 	balks = b;
 	is_broken = false;
+    is_fixed = false;
 }
 
 void Chain::add_balk(Balk* b)
@@ -32,6 +34,8 @@ void Chain::add_balk(Balk* b)
 
 void Chain::update_gravity(double dt, double t)
 {
+	rotate_all(0.1);
+	return;
 	if (size() == 2)
 	{
 		double m1 = balks[0]->get_mass();
@@ -42,18 +46,6 @@ void Chain::update_gravity(double dt, double t)
 		double o2 = balks[1]->get_omega();
 		double y1 = balks[0]->get_sprite().getRotation() * M_PI/180;
 		double y2 = balks[1]->get_sprite().getRotation() * M_PI/180;
-        // if (y1 >= M_PI && y1 <= 2*M_PI)
-        // {
-        //     y1 -= M_PI;
-        //     y1 = -y1;
-        // }
-		// if (y2 >= M_PI && y2 <= 2*M_PI)
-        // {
-        //     y2 -= M_PI;
-        //     y2 = -y2;
-        // }
-		// double p1 = (m1 + m2)*l1*l1*o1 + m2*l1*l2*o2*cos(y1 - y2);
-		// double p2 = m2*l2*l2*o2 + m2*l1*l2*o1*cos(y1 - y2);
 		double p1 = balks[0]->get_omega();
 		double p2 = balks[1]->get_omega();
 		std::vector<double> new_val(4);
@@ -143,4 +135,12 @@ void Chain::ch_is_broken()
 bool Chain::get_is_broken()
 {
 	return is_broken;
+}
+
+void Chain::rotate_all(float angle)
+{
+	for (auto& balk : balks)
+	{
+		balk->rotate_(angle);
+	}
 }
