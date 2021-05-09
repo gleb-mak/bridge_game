@@ -8,11 +8,12 @@ Cargo::Cargo()
 	is_initialized = false;
 	is_begin = false;
 	is_finished = false;
-	texture.loadFromFile("./images/stick.png");
-    sprite.setTexture(texture);
-    sprite.setTextureRect(sf::IntRect(0, 0, 50, 50));
-	sprite.setOrigin(50, 50);
-    sprite.setPosition({200, 200});	
+	texture.loadFromFile("./images/cat.png");
+	sprite.setTexture(texture);
+	sprite.setTextureRect(sf::IntRect(0, 0, 1406, 827));
+	sprite.setOrigin(703, 827);
+	sprite.setScale(0.05f, 0.05f);
+	sprite.setPosition({200, 200});	
 }
 
 int Cargo::get_current_balk()
