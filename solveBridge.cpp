@@ -1,5 +1,6 @@
 #include "solveBridge.h"
 #define EPS 10
+#define PI 3.14159265
 
 //Chain должна облажать 1)Chain -- массив балок
 //у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
@@ -36,7 +37,6 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 	}
 
 	float max = 0;
-	int max_index;
 	std::vector<float> modules;
 	for (int i = 0; i < forces.size(); i++)
 	{
@@ -45,7 +45,6 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 		if (temp_mod > max)
 		{
 			max = temp_mod;
-			max_index = i;
 		}
 	}
 	int i = 0;
@@ -56,14 +55,14 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 		 	sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0); 
 			sf::Vector3f norm_force = normalize_vector(force_switch_basis);
 			double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-			arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 10);
+			arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, 180 -(acos(angle)*180)/PI, 70*modules[i]/max);
 			break;
 		}
 		sf::Vector2f place = bridge[i].get_begin();
 		sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0);
 		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
 		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-		arrow.initialize(place.x + 5, place.y + 5, angle, 10);
+		arrow.initialize(place.x + 5, place.y + 5, 180 -(acos(angle)*180)/PI, 70*modules[i]/max);
 		i++;
 	}
 }
@@ -221,7 +220,8 @@ void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows
         {
             total_mass += bridge[i].get_mass();
         }
-        float N_begin_y =-1*total_mass*G -N_end_y; //Игрек координата силы реакции самого первого крепежа; по второму закону Ньютона в проекции на ось y, N_end_y + N_begin_y = -Mg, где M - сумма масс балок
+				total_mass += body.get_mass();
+        float N_begin_y =total_mass*G -N_end_y; //Игрек координата силы реакции самого первого крепежа; по второму закону Ньютона в проекции на ось y, N_end_y + N_begin_y = -Mg, где M - сумма масс балок
 				
 				std::vector<float> n_y_coords;
 				n_y_coords.push_back(N_begin_y);

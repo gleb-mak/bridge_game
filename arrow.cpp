@@ -17,18 +17,17 @@ void Arrow::initialize(float position_x, float position_y, double angle_, int si
 {
 	position.x = position_x;
 	position.y = position_y;
-	angle = angle;
+	angle = angle_;
 	size = size_;
 
 	arrow_texture.loadFromFile("./images/fastener.png");
     arrow_sprite.setTexture(arrow_texture);
-    arrow_sprite.setTextureRect(sf::IntRect(0, 0, 10, 50));
+    arrow_sprite.setTextureRect(sf::IntRect(0, 0, 10, size_));
     // setPosition_(position);
     // rotate_(angle);
 	arrow_sprite.setPosition(position_x, position_y);
-	arrow_sprite.setRotation(angle);
+	arrow_sprite.setRotation(angle_);
 	
-	// arrow_sprite.setTextureRect(sf::IntRect(0, 0, 10, 50*size_));
 	is_valid = true;
 }
 
