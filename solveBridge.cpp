@@ -39,7 +39,7 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 			sf::Vector3f norm_force = normalize_vector(force_switch_basis);
 			double cos_angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
 			double angle = (acos(cos_angle)*180)/PI;
-			arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, modules[i]);
+			arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 0.3*modules[i]);
 			break;
 		}
 		sf::Vector2f place = bridge[i].get_begin();
@@ -47,7 +47,7 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
 		double cos_angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
 		double angle = (acos(cos_angle)*180)/PI;
-		arrow.initialize(place.x + 5, place.y + 5, angle, modules[i]);
+		arrow.initialize(place.x + 5, place.y + 5, angle, 0.3*modules[i]);
 		i++;
 	}
 }
