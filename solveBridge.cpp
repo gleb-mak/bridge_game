@@ -1,5 +1,5 @@
 #include "solveBridge.h"
-#define EPS 1
+#define EPS 10
 
 //Chain должна облажать 1)Chain -- массив балок
 //у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
@@ -27,7 +27,14 @@ double scalar_product (sf::Vector3f a, sf::Vector3f b)
 
 void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow>& arrows)
 {
+	arrows.clear();
 	int len = bridge.GetLen();
+	arrows.resize(len + 1);
+	for (auto& arrow : arrows)
+	{
+		arrow = Arrow();
+	}
+
 	float max = 0;
 	int max_index;
 	std::vector<float> modules;
@@ -49,7 +56,7 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 		 	sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0); 
   		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
   		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-  		arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 0);
+  		arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 1);
 			break;
 		}
 		sf::Vector2f place = bridge[i].get_begin();

@@ -110,20 +110,6 @@ void Engine::update(double dt)
 					chain.is_fixed = true;
 				}
 			}
-			for (auto& chain : chains)
-			{
-				// у первой зафиксированной цепочки создается список сил реакции
-				if(chain.is_fixed)
-				{
-					int len = chain.GetLen();
-					arrows.resize(len + 1);
-					for (auto& arrow : arrows)
-					{
-						arrow = Arrow();
-					}
-					break;
-				}
-			}
 		}
 		if (!balk->is_child && !balk->is_fixed)
 		{
