@@ -54,15 +54,17 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 		{
 		 	sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0); 
 			sf::Vector3f norm_force = normalize_vector(force_switch_basis);
-			double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-			arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, 180 -(acos(angle)*180)/PI, 70*modules[i]/max);
+			double cos_angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
+			double angle = (acos(cos_angle)*180)/PI;
+			arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 70*modules[i]/max);
 			break;
 		}
 		sf::Vector2f place = bridge[i].get_begin();
 		sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0);
 		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
-		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-		arrow.initialize(place.x + 5, place.y + 5, 180 -(acos(angle)*180)/PI, 70*modules[i]/max);
+		double cos_angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
+		double angle = (acos(cos_angle)*180)/PI;
+		arrow.initialize(place.x + 5, place.y + 5, angle, 70*modules[i]/max);
 		i++;
 	}
 }
@@ -181,8 +183,9 @@ void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows
     else
     {   
         std::vector<sf::Vector3f> reactions; // n+1 векторов рекции опоры в правом ортонормированном базисе, где n -- количество балок в мосте
-
-        sf::Vector3f gravity_vector = sf::Vector3f(0, -1, 0);
+        std::vector<sf::Vector3f> forces; // 2n+2  векторов рекции опоры в правом ортонормированном базисе, где n -- количество балок в мосте
+        
+				sf::Vector3f gravity_vector = sf::Vector3f(0, -G, 0);
         //посчитаем момент всех сил относительно начала моста:
         sf::Vector3f l_sum = sf::Vector3f(0, 0, 0); // создали вектор который в конечном счете будет хранить вектор соединящий начало и конец моста, также он будет являться расстоянием от начала моста до iой балки
         sf::Vector3f moment_sum1 = sf::Vector3f(0, 0, 0); //результирующий момент сил относительно начала моста
