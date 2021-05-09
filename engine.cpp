@@ -57,5 +57,5 @@ void Engine::add_arrow()
 
 void Engine::add_chain(Balk* b)
 {
-	chains.push_back(b);
+	chains.push_back(Chain(b));
 }

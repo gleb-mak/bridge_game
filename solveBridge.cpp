@@ -54,16 +54,16 @@ void draw_forces(Chain bridge, std::vector<sf::Vector3f> forces, std::list<Arrow
 		if (i == len)
 		{
 		 	sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0); 
-  		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
-  		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-  		arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 1);
+			sf::Vector3f norm_force = normalize_vector(force_switch_basis);
+			double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
+			arrow.initialize((bridge[i - 1].get_end()).x + 5, (bridge[i - 1].get_end()).y + 5, angle, 10);
 			break;
 		}
 		sf::Vector2f place = bridge[i].get_begin();
 		sf::Vector3f force_switch_basis = sf::Vector3f(forces[i].x, -forces[i].y, 0);
 		sf::Vector3f norm_force = normalize_vector(force_switch_basis);
 		double angle = scalar_product(norm_force, sf::Vector3f(0, 1, 0));
-		arrow.initialize(place.x + 5, place.y + 5, angle, 1);
+		arrow.initialize(place.x + 5, place.y + 5, angle, 10);
 		i++;
 	}
 }

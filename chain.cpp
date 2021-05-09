@@ -14,12 +14,14 @@ Chain::Chain(Balk* b)
 {
 	balks.push_back(b);
 	number_of_balks = 1;
+	is_broken = false;
 }
 
 void Chain::initialize(int n, vector<Balk*>& b)
 {
 	number_of_balks = n;
 	balks = b;
+	is_broken = false;
 }
 
 void Chain::add_balk(Balk* b)
