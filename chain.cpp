@@ -66,18 +66,18 @@ void Chain::update_gravity(double dt, double t)
 		balks[0]->rotate_(-(y1 - new_val[0])*180/M_PI);
 		balks[1]->rotate_(-(y2 - new_val[1])*180/M_PI);
 	}
-	else
-	{
+	//else
+	//{
 		// double angle = sprite.getRotation() * M_PI / 180;
-		double angle = angle_2_vectors(sf::Vector2f(0, 1), sf::Vector2f(mass_center.x, mass_center.y));
-        if (angle >= M_PI)
-        {
-            angle -= M_PI;
-            angle = -angle;
-        }
-        double new_angle = Runge_Kutta(angle, t, omega, dt, get_mass(), G, find_module(mass_center), inertial_momentum);
-        rotate_all((angle - new_angle) * 180/M_PI);
-	}
+	//	double angle = angle_2_vectors(sf::Vector2f(0, 1), sf::Vector2f(mass_center.x, mass_center.y));
+   //     if (angle >= M_PI)
+    //    {
+     //       angle -= M_PI;
+      //      angle = -angle;
+       // }
+     //   double new_angle = Runge_Kutta(angle, t, omega, dt, get_mass(), G, find_module(mass_center), inertial_momentum);
+      //  rotate_all((angle - new_angle) * 180/M_PI);
+//	}
 }
 
 vector<Balk*>& Chain::get_balks()

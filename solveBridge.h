@@ -3,7 +3,7 @@
 #include "cargo.h"
 #include "chain.h"
 #include "arrow.h"
-#define MAX_FORCE 120
+#define MAX_FORCE 120000
 
 sf::Vector3f vector_mul (sf::Vector3f left, sf::Vector3f right);
 void createSolidChains(Chain& bridge, int broken_node);

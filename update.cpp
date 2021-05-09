@@ -156,10 +156,10 @@ void Engine::update(double dt)
 		{
 			balk->update_child();			
 		}
-		// if (is_gravity)
-		// {
-		// 	balk->update_gravity(dt, g_time);
-		// }
+		 if (is_gravity)
+		 {
+		 	balk->update_gravity(dt, g_time);
+		 }
 		balk++;
 	}
 	for (auto& chain : chains)
