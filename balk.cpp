@@ -209,7 +209,7 @@ void Balk::update_gravity(double dt, double t)
 		// y[0] = angle;
 		// Runge_Kutta_2nd_Order(Balk::movement_ODE, 0, y, omega, h, number_of_steps, len, mass);
 		// rotate_((y[0] - y[4]) * 180/M_PI);
-		double new_angle = Runge_Kutta(angle, t, omega, dt, mass, G, len);
+		double new_angle = Runge_Kutta(angle, t, omega, dt, mass, G, len/2, mass*len*len/3);
 		rotate_((angle - new_angle) * 180/M_PI);
 	}
 	// else if (!is_child)

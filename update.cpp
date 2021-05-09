@@ -25,7 +25,7 @@ void Engine::update(double dt)
 			for (auto& chain : chains)
 			{
 			if (chain.is_fixed)
-					solveBridge(chain, body, dt, arrows);
+					solveBridge(chain, body, dt, arrows, g_time);
 					continue;
 			}
 		}
@@ -156,10 +156,10 @@ void Engine::update(double dt)
 		{
 			balk->update_child();			
 		}
-		if (is_gravity)
-		{
-			balk->update_gravity(dt, g_time);
-		}
+		// if (is_gravity)
+		// {
+		// 	balk->update_gravity(dt, g_time);
+		// }
 		balk++;
 	}
 	for (auto& chain : chains)

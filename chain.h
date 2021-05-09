@@ -25,10 +25,12 @@ public:
 	double GetMoment();
 	void ch_is_broken();
 	bool get_is_broken();
+	void ch_begin_end();
 	Balk& operator[](int index);
 	bool is_fixed;
 	sf::Vector3f mass_center;
 	double get_mass();
+	double omega;
 private:
 	bool is_broken;
 	double inertial_momentum;

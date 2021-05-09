@@ -6,6 +6,7 @@ void Engine::draw()
 	window.clear(sf::Color(255, 255, 255));
 	for (auto& balk : balks)
 	{
+		// std::cout << balk.get_sprite().getOrigin().x << "\t" << balk.get_sprite().getOrigin().y << "\n";
 		window.draw(balk.get_sprite());
 		window.draw(balk.fasteners[0].get_sprite());
 		window.draw(balk.fasteners[1].get_sprite());

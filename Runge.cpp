@@ -36,6 +36,11 @@ double f(double x, double y, double z, double m, double g, double l)
     return ((3 * g * sin(y))/(2 * l)) - (z/( (z == 0) ? 1 : fabs(z) )) * (3 * REZIST_MOMENTUM) / (m * l * l);
 }
 
+double f_chain(double x, double y, double z, double m, double g, double l, double I)
+{
+    return (m * g * l * sin(y) - (z/( (z == 0) ? 1 : fabs(z) )) * REZIST_MOMENTUM) / I;
+}
+
 double g(double x, double y, double z)
 {
 		return (z);
@@ -91,19 +96,20 @@ double f4(double p1, double p2, double y1, double y2, double l1, double l2, doub
 	return (2*sin(y1-y2)*(p1*p1*l1*(m1+m2)+g*(m1+m2)*cos(y1)+p2*p2*l2*m2*cos(y1-y2))) / (l2*(2*m1+m2-m2*cos(2*y1-2*y2)));
 }
 //I * a'' = r_c *MG + M_tr
-double integrate_chain(Chain& chain, double G)
-{
-	return -((vector_mul(chain.mass_center, (float)chain.get_mass()*sf::Vector3f(0, -(float)G, 0)).z + REZIST_MOMENTUM)/chain.GetMoment());
-}
+// double integrate_chain(double x, double y, double z, double m, double g, double l) //x - t, y - angle, z - omega
+// {
+// 	return 
+	// return -((vector_mul(chain.mass_center, (float)chain.get_mass()*sf::Vector3f(0, -(float)g, 0)).z + REZIST_MOMENTUM)/chain.GetMoment());
+// }
 
-double Runge_Kutta(double Yo, double Xo, double& Zo, double dt, double m, double G, double l)
+double Runge_Kutta(double Yo, double Xo, double& Zo, double dt, double m, double G, double l, double I) //y - angle, x - t, z - ome
 {
 	double Y1, Z1;
 	double k1, k2, k4, k3;
 	double q1, q2, q4, q3;
 	int n = 5;
 	double h = dt / n;
-	auto f1 = std::bind(f, _1, _2, _3, m, G, l);
+	auto f1 = std::bind(f_chain, _1, _2, _3, m, G, l, I);
 	for (int i = 0; i < n; ++i)
 	{
 		k1 = h * f1(Xo, Yo, Zo);
@@ -127,39 +133,6 @@ double Runge_Kutta(double Yo, double Xo, double& Zo, double dt, double m, double
 	}
 	return Y1;
 }
-
-double Runge_Kutta2(Chain& chain, double gravity, double dt)
-{
-  double Y1, Z1; 
-  double k1, k2, k4, k3;
-  double q1, q2, q4, q3;
-  int n = 5; 
-  double h = dt / n;
-  auto f1 = std::bind(integrate_chain, _1, _2);
-  for (int i = 0; i < n; ++i)
-  { 
-    k1 = h * f1(chain, gravity);
-    q1 = h * g(Xo, Yo, Zo);
-
-    k2 = h * f1(Xo + h/2.0, Yo + q1/2.0, Zo + k1/2.0);
-    q2 = h * g(Xo + h/2.0, Yo + q1/2.0, Zo + k1/2.0);
-
-    k3 = h * f1(Xo + h/2.0, Yo + q2/2.0, Zo + k2/2.0);
-    q3 = h * g(Xo + h/2.0, Yo + q2/2.0, Zo + k2/2.0);
-
-    k4 = h * f1(Xo + h, Yo + q3, Zo + k3);
-    q4 = h * g(Xo + h, Yo + q3, Zo + k3);
-
-    Z1 = Zo + (k1 + 2.0*k2 + 2.0*k3 + k4)/6.0;
-    Y1 = Yo + (q1 + 2.0*q2 + 2.0*q3 + q4)/6.0;
-
-    Yo = Y1;
-    Zo = Z1;
-    Xo += h;
-  }
-  return Y1;
-}
-
 
 void Runge_Kutta_2nd_Order( double (*f)(double, double, double, double, double), double x0,
                         double y[], double& c, double dt, int number_of_steps, double len, double mass ) {

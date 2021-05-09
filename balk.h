@@ -42,6 +42,7 @@ public:
 	double get_omega();
 	void rotate_(float angle);
 	void set_omega(double new_omega);
+	void ch_origin(sf::Vector2f new_origin);
 private:
     double len;
     double angle;
@@ -53,7 +54,6 @@ private:
 	sf::Texture texture;
 	Balk* parent;
 	sf::Sprite sprite;
-	void ch_origin(sf::Vector2f new_origin);
 	void setPosition_(sf::Vector2f new_position);
 	void setRotation_(float angle);
 	static double movement_ODE(double t, double angle, double c, double len, double mass);

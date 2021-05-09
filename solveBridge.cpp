@@ -1,17 +1,10 @@
 #include "solveBridge.h"
 #include "Runge.h"
+#include <iostream>
 #define EPS 10
 #define PI 3.14159265
 #define G 10
 #define fake_g 0.001
-
-//Chain должна облажать 1)Chain -- массив балок
-//у каждой балки должен быть вектор соединяющий начало и конец балки в правом ортонормированном базисе с иксом напрвленным как на картинке
-//cargo имеет свойство body.current_balk текущая балка на которой находится тело от нуля до n-1
-//cargo имеет массу cargo.mass
-//у Chain есть свойство динамическое длины и есть метод setlen и getlen. Setlen буквально аллоцирует память
-//у Chain есть метод clear() который очищает массив цепочек
-//у Chain есть свойство double inertial_momentum 
 
 Chain left_piece;
 Chain right_piece;
@@ -113,11 +106,24 @@ void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], br
 		if (broken_node == 0)
     {
 				int len = bridge.GetLen();
-        for (int i = 0; i < len; i++)
-        {
-						bridge[len - 1 - i];
-            right_piece.add_balk(&bridge[len - 1 - i]);
-        }
+		for (int i = 0; i < len; i++)
+		{
+			if (i == 0)
+			{
+				bridge[0].is_parent = false;
+				bridge[0].is_child = true;
+			}
+			if (i < (len - 1))
+			{
+				bridge[i].set_parent(&bridge[i + 1]);
+			}
+			if (i == (len - 1))
+			{
+				bridge[i].is_parent = true;
+				bridge[i].is_child = false;
+			}
+			right_piece.add_balk(&bridge[len - 1 - i]);
+		}
     }
     else if (broken_node == bridge.GetLen())
     {
@@ -139,14 +145,15 @@ void createSolidChains(Chain& bridge, int broken_node) //broken_node [0...n], br
             right_piece.add_balk(&bridge[i]);
         }
     }
-    left_piece. SetMoment(find_inertial_momentum(left_piece));
+    left_piece.SetMoment(find_inertial_momentum(left_piece));
     right_piece.SetMoment(find_inertial_momentum(right_piece));
-		find_mass_center(left_piece, 0);
-		find_mass_center(right_piece, 1);
+	find_mass_center(left_piece, 0);
+	find_mass_center(right_piece, 1);
+	right_piece.ch_begin_end();	
 }
 // Ia' = ---
 //a = b'
-void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows)
+void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows, double t)
 {
     if (body.is_finished)
     {
@@ -154,9 +161,9 @@ void solveBridge(Chain& bridge, Cargo& body, double dt, std::list<Arrow>& arrows
     }
     if (bridge.get_is_broken())
     {
-			double new_angle = Runge_Kutta(
-			//left_piece.rotate_all();
-			//right_piece.rotate_all();
+			//double new_angle = Runge_Kutta(
+			left_piece.update_gravity(dt, t);
+			right_piece.update_gravity(dt, t);
     }
     else
     {   

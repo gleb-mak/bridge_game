@@ -8,6 +8,7 @@ Chain::Chain()
 	number_of_balks = 0;
 	is_broken = false;
 	is_fixed = false;
+	omega = 0;
 }
 
 Chain::Chain(Balk* b)
@@ -16,6 +17,7 @@ Chain::Chain(Balk* b)
 	number_of_balks = 1;
 	is_broken = false;
 	is_fixed = false;
+	omega = 0;
 }
 
 void Chain::initialize(int n, vector<Balk*>& b)
@@ -24,6 +26,7 @@ void Chain::initialize(int n, vector<Balk*>& b)
 	balks = b;
 	is_broken = false;
     is_fixed = false;
+	omega = 0;
 }
 
 void Chain::add_balk(Balk* b)
@@ -44,8 +47,6 @@ double Chain::get_mass()
 
 void Chain::update_gravity(double dt, double t)
 {
-	rotate_all(0.1);
-	return;
 	if (size() == 2)
 	{
 		double m1 = balks[0]->get_mass();
@@ -64,6 +65,18 @@ void Chain::update_gravity(double dt, double t)
 		balks[1]->set_omega(new_val[3]);
 		balks[0]->rotate_(-(y1 - new_val[0])*180/M_PI);
 		balks[1]->rotate_(-(y2 - new_val[1])*180/M_PI);
+	}
+	else
+	{
+		// double angle = sprite.getRotation() * M_PI / 180;
+		double angle = angle_2_vectors(sf::Vector2f(0, 1), sf::Vector2f(mass_center.x, mass_center.y));
+        if (angle >= M_PI)
+        {
+            angle -= M_PI;
+            angle = -angle;
+        }
+        double new_angle = Runge_Kutta(angle, t, omega, dt, get_mass(), G, find_module(mass_center), inertial_momentum);
+        rotate_all((angle - new_angle) * 180/M_PI);
 	}
 }
 
@@ -152,5 +165,15 @@ void Chain::rotate_all(float angle)
 	for (auto& balk : balks)
 	{
 		balk->rotate_(angle);
+	}
+}
+
+void Chain::ch_begin_end()
+{
+	// balks[0]->ch_origin(sf::Vector2f(5, balks[0]->get_len()));
+	// balks[GetLen() - 1]->ch_origin(sf::Vector2f(5, balks[GetLen() - 1]->get_len()));
+	for (auto& balk : balks)
+	{
+		balk->ch_origin(sf::Vector2f(5, balk->get_len()));		
 	}
 }
